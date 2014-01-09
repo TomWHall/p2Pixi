@@ -7,7 +7,14 @@ var BuggyDemo;
 
 	var environmentUtil = (function () {
 
-		var terrainMaterial = new p2.Material();
+	    var terrainMaterial = new p2.Material()
+            , zero = [0, 0];
+
+	    // Default options for terrain bodies
+	    var terrainBodyOptions = {
+	        collisionGroup: 1
+			, collisionMask: 1 | 2
+	    };
 
 		function buildTerrain(game) {
 
@@ -30,13 +37,12 @@ var BuggyDemo;
 			terrain.addBody(box)
 				.addShape(box
 					, new p2.Rectangle(100, 3)
+                    , zero
+                    , 0
 					, {
 						fillColor: 0x444444
 					}
-					, {
-						collisionGroup: 1
-						, collisionMask: 1 | 2
-					});
+					, terrainBodyOptions);
 
 			x = -50;
 			while (x < 50) {
@@ -61,13 +67,12 @@ var BuggyDemo;
 				terrain.addBody(box)
 					.addShape(box
 						, rectangle
+                        , zero
+                        , 0
 						, {
 							fillColor: 0x444444
 						}
-						, {
-							collisionGroup: 1
-							, collisionMask: 1 | 2
-						});
+						, terrainBodyOptions);
 
 			}
 		}

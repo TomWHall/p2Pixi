@@ -296,7 +296,7 @@ var BuggyDemo;
 		 * @param  {Vector} offset
 		 * @param  {Number} angle
 		 */
-		PixiAdapter.prototype.renderShapeToSprite = function (sprite, shape, style, offset, angle) {
+		PixiAdapter.prototype.renderShapeToSprite = function (sprite, shape, offset, angle, style) {
 			var zero = [0, 0]
 				, ppu = this.pixelsPerLengthUnit
 				, verts
@@ -308,10 +308,10 @@ var BuggyDemo;
 			angle = angle || 0;
 
 			if (shape instanceof Circle) {
-				this.drawCircle(sprite, offset[0] * ppu, offset[1] * ppu, angle, shape.radius * ppu, style);
+				this.drawCircle(sprite, offset[0] * ppu, -offset[1] * ppu, angle, shape.radius * ppu, style);
 
 			} else if (shape instanceof Particle) {
-				this.drawCircle(sprite, offset[0] * ppu, offset[1] * ppu, angle, 2 * lw, style);
+				this.drawCircle(sprite, offset[0] * ppu, -offset[1] * ppu, angle, 2 * lw, style);
 
 			} else if (shape instanceof Plane) {
 				// TODO: use shape angle
@@ -321,10 +321,10 @@ var BuggyDemo;
 				this.drawLine(sprite, child.length * ppu, style);
 
 			} else if (shape instanceof Rectangle) {
-				this.drawRectangle(sprite, offset[0] * ppu, offset[1] * ppu, angle, shape.width * ppu, shape.height * ppu, style);
+				this.drawRectangle(sprite, offset[0] * ppu, -offset[1] * ppu, angle, shape.width * ppu, shape.height * ppu, style);
 
 			} else if (shape instanceof Capsule) {
-				this.drawCapsule(sprite, offset[0] * ppu, offset[1] * ppu, angle, shape.length * ppu, shape.radius * ppu, style);
+				this.drawCapsule(sprite, offset[0] * ppu, -offset[1] * ppu, angle, shape.length * ppu, shape.radius * ppu, style);
 
 			} else if (shape instanceof Convex) {
 				// Scale verts

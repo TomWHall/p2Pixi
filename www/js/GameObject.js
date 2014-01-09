@@ -47,20 +47,24 @@ var BuggyDemo;
 		 * @param  {Object} options
 		 * @return {GameObject} gameObject
 		 */
-		GameObject.prototype.addShape = function (body, shape, style, options) {
+		GameObject.prototype.addShape = function (body, shape, offset, angle, style, options) {
 			var sprite;
 
-			options = options || {};
+			offset = offset || [0, 0];
+			angle = angle || 0;
 
+			options = options || {};
 			shape.collisionGroup = options.collisionGroup || 1;
 			shape.collisionMask = options.collisionMask || 1;
 
-			body.addShape(shape);
+			body.addShape(shape, offset, angle);
 
 			sprite = this.sprites[this.bodies.indexOf(body)];
 
 			this.game.pixiAdapter.renderShapeToSprite(sprite
 				, shape
+                , offset
+                , angle
 				, style);
 
 			return this;
