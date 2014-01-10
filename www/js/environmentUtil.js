@@ -23,8 +23,8 @@ var BuggyDemo;
 				, width
 				, box
 				, angle
-				, lastAngle
-				, rectangle;
+				, rectangle
+                , even = true;
 
 
 			// Ground
@@ -49,11 +49,7 @@ var BuggyDemo;
 				width = BuggyDemo.util.randomNumber(25, 100) / 25;
 				x += width * 0.7;
 
-				angle = BuggyDemo.util.randomNumber(1, 20) / 100;
-				if (lastAngle > 0) {
-					angle = angle * -1;
-				}
-				lastAngle = angle;
+				angle = (BuggyDemo.util.randomNumber(1, 15) / 100) * (even ? 1 : -1);
 
 				box = new p2.Body({
 					mass: 0
@@ -74,6 +70,7 @@ var BuggyDemo;
 						}
 						, terrainBodyOptions);
 
+				even = !even;
 			}
 		}
 

@@ -46,10 +46,17 @@ var BuggyDemo;
 				, i
 				, revoluteConstraint;
 
-            this.maximumSpeed = 25;
-            this.speed = 0;
-            this.decelerationPerStep = 0.1;
+            this.speed = 0; // Speed of the motors, in p2 speed units
+            this.maximumSpeed = 25; // Absolute maxiumum speed of the motors in either direction, in p2 speed units
+            this.accelerationRate = 10; // Rate at which player can accelerate, in p2 speed units per millisecond
+            this.decelerationRate = 10; // Rate at which the buggy comes to rest, in p2 speed units per millisecond
+            this.reverseDirectionRate = 3; // Multiplier for extra reverse acceleration when changing direction
+            this.direction = 0; // Direction of the buggy. Negative = left, positive = right
+
             this.tyreMaterial = new p2.Material();
+
+            this.timeSinceLastStep = 0;
+            this.lastCallTime = this.time();
 
 
             // Chassis, dome and plate
@@ -195,17 +202,33 @@ var BuggyDemo;
             addMotorizedRevoluteConstraint.call(this, rightSuspensionBar, [0.25, 0], rightOuterWheel, [0, 0]);
 
 
-            // Apply drag to the motors
+            // Adjust speed based on acceleration
 
             this.game.world.on('postStep', function (e) {
-                var speed = self.getSpeed();
+                var time = self.time()
+                    , timeSinceLastCall = time - self.lastCallTime
+                    , speed = self.getSpeed();
 
-                if (speed < 0) {
-                    speed += self.decelerationPerStep;
-                } else if (speed > 0) {
-                    speed -= self.decelerationPerStep;
+                self.lastCallTime = time;
+
+                if (self.direction < 0) {
+                    speed -= (timeSinceLastCall * (self.accelerationRate * (speed > 0 ? self.reverseDirectionRate : 1)));
+                    if (speed < -self.maximumSpeed) {
+                        speed = -self.maximumSpeed;
+                    }
+                } else if (self.direction > 0) {
+                    speed += (timeSinceLastCall * (self.accelerationRate * (speed < 0 ? self.reverseDirectionRate : 1)));
+                    if (speed > self.maximumSpeed) {
+                        speed = self.maximumSpeed;
+                    }
+                } else {
+                    if (speed < 0) {
+                        speed += (timeSinceLastCall * self.decelerationRate)
+                    } else if (speed > 0) {
+                        speed -= (timeSinceLastCall * self.decelerationRate);
+                    }
                 }
-
+                
                 self.setSpeed(speed);
             })
 
@@ -236,34 +259,24 @@ var BuggyDemo;
         };
 
         /**
-		 * Adds a positive or negative increment to the motor speed of the buggy's wheels
-		 * @param  {Number} speed
-		 */
-        Buggy.prototype.addSpeed = function (increment) {
-            var speed = this.getSpeed();
-
-            speed += increment;
-            if (speed < -this.maximumSpeed) {
-                speed = -this.maximumSpeed;
-            } else if (speed > this.maximumSpeed) {
-                speed = this.maximumSpeed;
-            }
-
-            this.setSpeed(speed);
-        }
-
-        /**
 		 * Accelerates the buggy to the left
 		 */
         Buggy.prototype.accelerateLeft = function () {
-            this.addSpeed(-1);
+            this.direction = -1;
         }
 
         /**
 		 * Accelerates the buggy to the right
 		 */
         Buggy.prototype.accelerateRight = function () {
-            this.addSpeed(1);
+            this.direction = 1;
+        }
+
+        /**
+         * Removes acceleration from the buggy
+         */
+        Buggy.prototype.endAcceleration = function () {
+            this.direction = 0;
         }
 
         return Buggy;

@@ -110,8 +110,8 @@ var BuggyDemo;
 				, pixiAdapter = this.pixiAdapter;
 
 			document.addEventListener('keydown', function (e) {
-				var keyDownID = window.event ? event.keyCode : (e.keyCode !== 0 ? e.keyCode : e.which);
-				switch (keyDownID) {
+			    var keyID = window.event ? event.keyCode : (e.keyCode !== 0 ? e.keyCode : e.which);
+			    switch (keyID) {
 					case 37:
 						buggy.accelerateLeft();
 						break;
@@ -122,7 +122,17 @@ var BuggyDemo;
 				}
 			});
 
-			function onCanvasTouch(e) {
+			document.addEventListener('keyup', function (e) {
+			    var keyID = window.event ? event.keyCode : (e.keyCode !== 0 ? e.keyCode : e.which);
+			    switch (keyID) {
+			        case 37:
+			        case 39:
+			            buggy.endAcceleration();
+			            break;
+			    }
+			});
+
+			function onCanvasTouchHold(e) {
 				var touch = e.gesture.touches[0];
 
 				if (touch.pageX <= pixiAdapter.windowWidth / 2)
@@ -131,19 +141,15 @@ var BuggyDemo;
 					buggy.accelerateRight();
 			}
 
-			function onCanvasHold(e) {
-				var touch = e.gesture.touches[0];
-
-				if (touch.pageX <= pixiAdapter.windowWidth / 2)
-					buggy.accelerateLeft();
-				else
-					buggy.accelerateRight();
+			function onCanvasRelease(e) {
+			    buggy.endAcceleration();
 			}
 
 			var viewport = document.getElementById('viewport');
 			Hammer(viewport)
-				.on('touch', onCanvasTouch)
-				.on('hold', onCanvasHold);
+				.on('touch', onCanvasTouchHold)
+				.on('hold', onCanvasTouchHold)
+                .on('release', onCanvasRelease);
 		}
 
 		return Game;

@@ -70,6 +70,10 @@ var BuggyDemo;
 			return this;
 		};
 
+		GameObject.prototype.time = function () {
+		    return new Date().getTime() / 1000;
+		};
+
 		return GameObject;
 	})();
 
