@@ -28,7 +28,7 @@ var BuggyDemo;
 
 			BuggyDemo.environmentUtil.buildTerrain(this);
 
-		    // Add friction between buggy tyres and terrain
+			// Add friction between buggy tyres and terrain
 			this.world.addContactMaterial(new p2.ContactMaterial(this.buggy.tyreMaterial, BuggyDemo.environmentUtil.terrainMaterial, {
 				friction: 0.5
 			}));
@@ -40,15 +40,25 @@ var BuggyDemo;
 			this.run();
 		}
 
+		Game.prototype.time = function () {
+		    return new Date().getTime() / 1000;
+		};
+
 		/**
 		 * Begins the world step / render loop
 		 */
 		Game.prototype.run = function() {
-			var self = this;
+		    var self = this
+		        , lastCallTime = self.time()
+                , maxSubSteps = 10;
 
-			function update() {
+		    function update() {
+		        var timeSinceLastCall;
+
 				if (!self.paused) {
-					self.world.step(1 / 60);
+				    timeSinceLastCall = self.time() - lastCallTime;
+				    lastCallTime = self.time();
+					self.world.step(1 / 60, timeSinceLastCall, maxSubSteps);
 				}
 
 				self.render();
