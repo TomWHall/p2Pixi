@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<title>An experiment with p2.js and Pixi.js</title>
+	<title>p2Pixi space buggy example</title>
 	
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
@@ -13,19 +13,24 @@
 <body>
 	<canvas id="viewport"></canvas>
 
-	<script src="js/shims/requestAnimationFrame.js"></script>
-
-	<script src="js/lib/hammer/hammer.min.js"></script>
+    <!-- Buggy demo / p2Pixi dependencies -->
 	<script src="js/lib/jquery/jquery-2.0.3.min.js"></script>
 	<script src="js/lib/pixi/pixi.min.js"></script>
 	<script src="js/lib/p2/p2.min.js"></script>
+    <!--<script src="js/lib/p2/AABB.js"></script>-->     
+	<script src="js/lib/hammer/hammer.min.js"></script>
+    <script src="js/shims/requestAnimationFrame.js"></script>
 
-	<script src="js/PixiAdapter.js"></script>
+    <!-- p2Pixi source. TODO: Use minified build output -->
+	<script src="js/lib/p2Pixi/PixiAdapter.js"></script>
+    <script src="js/lib/p2Pixi/GameObject.js"></script>
+    <script src="js/lib/p2Pixi/Game.js"></script>
+
+    <!-- Buggy demo source -->
 	<script src="js/util.js"></script>
-	<script src="js/environmentUtil.js"></script>
-	<script src="js/GameObject.js"></script>
+	<script src="js/Terrain.js"></script>
 	<script src="js/Buggy.js"></script>
-	<script src="js/Game.js"></script>
+    <script src="js/Game.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

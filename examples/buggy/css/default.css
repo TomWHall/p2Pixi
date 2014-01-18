@@ -1,0 +1,18 @@
+body {
+    background: #000;
+}
+
+#viewport {
+    background-image: -webkit-gradient(
+	    linear,
+	    left top,
+	    left bottom,
+	    color-stop(0, #000),
+	    color-stop(1, #913b2d)
+    );
+    background-image: -o-linear-gradient(bottom, #000 0%, #913b2d 100%);
+    background-image: -moz-linear-gradient(bottom, #000 0%, #913b2d 100%);
+    background-image: -webkit-linear-gradient(bottom, #000 0%, #913b2d 100%);
+    background-image: -ms-linear-gradient(bottom, #000 0%, #913b2d 100%);
+    background-image: linear-gradient(to bottom, #000 0%, #913b2d 100%);
+}

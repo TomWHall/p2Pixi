@@ -1,4 +1,4 @@
-﻿/// <reference path="GameObject.js" />
+﻿/// <reference path="../../../src/GameObject.js" />
 
 var BuggyDemo;
 (function (BuggyDemo) {
@@ -8,19 +8,13 @@ var BuggyDemo;
 
         var zero = [0, 0];
 
-        // Default options for buggy bodies
-        var buggyBodyOptions = {
-            collisionGroup: 2
-		    , collisionMask: 1
-        };
-
         /**
 		 * Creates a new Buggy instance
 		 * @param  {Game} game
 		 */
         function Buggy(game) {
 
-            BuggyDemo.GameObject.call(this, game);
+            P2Pixi.GameObject.call(this, game);
 
             function addMotorizedRevoluteConstraint(bodyA, offsetA, bodyB, offsetB) {
                 var revoluteConstraint = new p2.RevoluteConstraint(bodyA, offsetA, bodyB, offsetB);
@@ -44,7 +38,14 @@ var BuggyDemo;
 				, tyre
 				, box
 				, i
-				, revoluteConstraint;
+				, revoluteConstraint
+                , buggyBodyShapeOptions = {
+                    collisionGroup: 2
+                    , collisionMask: 1
+                }
+                , metalTexture = PIXI.Texture.fromImage('img/metal.jpg', false)
+                , glassTexture = PIXI.Texture.fromImage('img/glass.jpg', false)
+                , tyreTexture = PIXI.Texture.fromImage('img/tyre.png', false);
 
             this.speed = 0; // Speed of the motors, in p2 speed units
             this.maximumSpeed = 25; // Absolute maxiumum speed of the motors in either direction, in p2 speed units
@@ -71,29 +72,29 @@ var BuggyDemo;
 					, new p2.Circle(0.3)
                     , [0, 0.2]
                     , 0
-					, {
-					    lineColor: 0x000000
-						, lineWidth: 1
-						, fillColor: 0x999999
-						, opacity: 0.15
-					}
-					, buggyBodyOptions)
-				.addShape(chassis
+                    , buggyBodyShapeOptions
+					, null
+                    , glassTexture
+                    , 0.9)
+                .addShape(chassis
 					, new p2.Convex([[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]])
                     , zero
                     , 0
+                    , buggyBodyShapeOptions
 					, {
-					    fillColor: 0x007777
+					    lineColor: 0x333333
+                        , lineWidth: 2
 					}
-					, buggyBodyOptions)
-            	.addShape(chassis
-					, new p2.Rectangle(1.5, 0.025)
+					, metalTexture)
+                .addShape(chassis
+                    , new p2.Rectangle(1.5, 0.03)
                     , [0, 0.2]
                     , 0
+                    , buggyBodyShapeOptions
 					, {
-					    fillColor: 0x005555
+					    fillColor: 0x2f424d
 					}
-					, buggyBodyOptions);
+                    , null);
 
 
             // Left suspension bar
@@ -105,13 +106,14 @@ var BuggyDemo;
 
             this.addBody(leftSuspensionBar)
 				.addShape(leftSuspensionBar
-					, new p2.Rectangle(0.5, 0.05)
+					, new p2.Rectangle(0.5, 0.07)
                     , zero
                     , 0
+                    , buggyBodyShapeOptions
 					, {
-					    fillColor: 0x666666
+					    fillColor: 0x333333
 					}
-					, buggyBodyOptions);
+                    , null);
 
 
             // Right suspension bar
@@ -123,13 +125,14 @@ var BuggyDemo;
 
             this.addBody(rightSuspensionBar)
 				.addShape(rightSuspensionBar
-					, new p2.Rectangle(0.5, 0.05)
+					, new p2.Rectangle(0.5, 0.07)
                     , zero
                     , 0
+                    , buggyBodyShapeOptions
 					, {
-					    fillColor: 0x666666
+					    fillColor: 0x333333
 					}
-					, buggyBodyOptions);
+                    , null);
 
 
             // Connect suspension bars to chassis
@@ -169,27 +172,31 @@ var BuggyDemo;
                 tyre.material = this.tyreMaterial;
 
                 this.addBody(wheel)
-					.addShape(wheel // Tyre
-						, tyre
+                     .addShape(wheel // Tyre
+					    , tyre
                         , zero
                         , 0
-						, {
-						    fillColor: 0x111111
-						}, buggyBodyOptions)
+                        , buggyBodyShapeOptions
+                        , null
+					    , tyreTexture)
 					.addShape(wheel // Hub
 						, new p2.Circle(0.1)
                         , zero
                         , 0
+                        , buggyBodyShapeOptions
 						, {
 						    fillColor: 0x999999
-						}, buggyBodyOptions)
+						}
+                        , null)
 					.addShape(wheel // Hub detail
 						, new p2.Rectangle(0.12, 0.025)
                         , zero
                         , 0
+                        , buggyBodyShapeOptions
 						, {
 						    fillColor: 0x444444
-						}, buggyBodyOptions);
+						}
+                        , null);
             }
 
 
@@ -228,7 +235,7 @@ var BuggyDemo;
                         speed -= (timeSinceLastCall * self.decelerationRate);
                     }
                 }
-                
+
                 self.setSpeed(speed);
             })
 
@@ -238,7 +245,7 @@ var BuggyDemo;
             this.primaryBody = chassis;
         }
 
-        Buggy.prototype = Object.create(BuggyDemo.GameObject.prototype);
+        Buggy.prototype = Object.create(P2Pixi.GameObject.prototype);
 
         /**
 		 * Returns the motor speed of the buggy's wheels
