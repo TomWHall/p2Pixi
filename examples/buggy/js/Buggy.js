@@ -1,6 +1,4 @@
-﻿/// <reference path="../../../src/GameObject.js" />
-
-var BuggyDemo;
+﻿var BuggyDemo;
 (function (BuggyDemo) {
     'use strict';
 
@@ -9,9 +7,9 @@ var BuggyDemo;
         var zero = [0, 0];
 
         /**
-		 * Creates a new Buggy instance
-		 * @param  {Game} game
-		 */
+         * Creates a new Buggy instance
+         * @param  {Game} game
+         */
         function Buggy(game) {
 
             P2Pixi.GameObject.call(this, game);
@@ -26,19 +24,19 @@ var BuggyDemo;
             }
 
             var self = this
-				, chassis
-				, leftSuspensionBar
-				, rightSuspensionBar
-				, leftOuterWheel
-				, leftInnerWheel
-				, rightInnerWheel
-				, rightOuterWheel
-				, wheels
-				, wheel
-				, tyre
-				, box
-				, i
-				, revoluteConstraint
+                , chassis
+                , leftSuspensionBar
+                , rightSuspensionBar
+                , leftOuterWheel
+                , leftInnerWheel
+                , rightInnerWheel
+                , rightOuterWheel
+                , wheels
+                , wheel
+                , tyre
+                , box
+                , i
+                , revoluteConstraint
                 , buggyBodyShapeOptions = {
                     collisionGroup: 2
                     , collisionMask: 1
@@ -64,36 +62,36 @@ var BuggyDemo;
 
             chassis = new p2.Body({
                 mass: 1
-				, position: [0, 0]
+                , position: [0, 0]
             });
 
             this.addBody(chassis)
                 .addShape(chassis
-					, new p2.Circle(0.3)
+                    , new p2.Circle(0.3)
                     , [0, 0.2]
                     , 0
                     , buggyBodyShapeOptions
-					, null
+                    , null
                     , glassTexture
                     , 0.9)
                 .addShape(chassis
-					, new p2.Convex([[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]])
+                    , new p2.Convex([[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]])
                     , zero
                     , 0
                     , buggyBodyShapeOptions
-					, {
-					    lineColor: 0x333333
+                    , {
+                        lineColor: 0x333333
                         , lineWidth: 2
-					}
-					, metalTexture)
+                    }
+                    , metalTexture)
                 .addShape(chassis
                     , new p2.Rectangle(1.5, 0.03)
                     , [0, 0.2]
                     , 0
                     , buggyBodyShapeOptions
-					, {
-					    fillColor: 0x2f424d
-					}
+                    , {
+                        fillColor: 0x2f424d
+                    }
                     , null);
 
 
@@ -101,18 +99,18 @@ var BuggyDemo;
 
             leftSuspensionBar = new p2.Body({
                 mass: 0.1
-				, position: [-0.5, 0.125]
+                , position: [-0.5, 0.125]
             });
 
             this.addBody(leftSuspensionBar)
-				.addShape(leftSuspensionBar
-					, new p2.Rectangle(0.5, 0.07)
+                .addShape(leftSuspensionBar
+                    , new p2.Rectangle(0.5, 0.07)
                     , zero
                     , 0
                     , buggyBodyShapeOptions
-					, {
-					    fillColor: 0x333333
-					}
+                    , {
+                        fillColor: 0x333333
+                    }
                     , null);
 
 
@@ -120,18 +118,18 @@ var BuggyDemo;
 
             rightSuspensionBar = new p2.Body({
                 mass: 0.1
-				, position: [0.5, 0.125]
+                , position: [0.5, 0.125]
             });
 
             this.addBody(rightSuspensionBar)
-				.addShape(rightSuspensionBar
-					, new p2.Rectangle(0.5, 0.07)
+                .addShape(rightSuspensionBar
+                    , new p2.Rectangle(0.5, 0.07)
                     , zero
                     , 0
                     , buggyBodyShapeOptions
-					, {
-					    fillColor: 0x333333
-					}
+                    , {
+                        fillColor: 0x333333
+                    }
                     , null);
 
 
@@ -145,22 +143,22 @@ var BuggyDemo;
 
             leftOuterWheel = new p2.Body({
                 mass: 0.2
-				, position: [0, 0]
+                , position: [0, 0]
             });
 
             leftInnerWheel = new p2.Body({
                 mass: 0.2
-				, position: [0.5, 0]
+                , position: [0.5, 0]
             });
 
             rightInnerWheel = new p2.Body({
                 mass: 0.2
-				, position: [1, 0]
+                , position: [1, 0]
             });
 
             rightOuterWheel = new p2.Body({
                 mass: 0.2
-				, position: [1.5, 0]
+                , position: [1.5, 0]
             });
 
             wheels = [leftOuterWheel, leftInnerWheel, rightInnerWheel, rightOuterWheel];
@@ -173,29 +171,29 @@ var BuggyDemo;
 
                 this.addBody(wheel)
                      .addShape(wheel // Tyre
-					    , tyre
+                        , tyre
                         , zero
                         , 0
                         , buggyBodyShapeOptions
                         , null
-					    , tyreTexture)
-					.addShape(wheel // Hub
-						, new p2.Circle(0.1)
+                        , tyreTexture)
+                    .addShape(wheel // Hub
+                        , new p2.Circle(0.1)
                         , zero
                         , 0
                         , buggyBodyShapeOptions
-						, {
-						    fillColor: 0x999999
-						}
+                        , {
+                            fillColor: 0x999999
+                        }
                         , null)
-					.addShape(wheel // Hub detail
-						, new p2.Rectangle(0.12, 0.025)
+                    .addShape(wheel // Hub detail
+                        , new p2.Rectangle(0.12, 0.025)
                         , zero
                         , 0
                         , buggyBodyShapeOptions
-						, {
-						    fillColor: 0x444444
-						}
+                        , {
+                            fillColor: 0x444444
+                        }
                         , null);
             }
 
@@ -248,17 +246,17 @@ var BuggyDemo;
         Buggy.prototype = Object.create(P2Pixi.GameObject.prototype);
 
         /**
-		 * Returns the motor speed of the buggy's wheels
-		 * @return {Number} speed
-		 */
+         * Returns the motor speed of the buggy's wheels
+         * @return {Number} speed
+         */
         Buggy.prototype.getSpeed = function () {
             return this.revoluteConstraints[0].getMotorSpeed();
         };
 
         /**
-		 * Sets the motor speed of the buggy's wheels
-		 * @param  {Number} speed
-		 */
+         * Sets the motor speed of the buggy's wheels
+         * @param  {Number} speed
+         */
         Buggy.prototype.setSpeed = function (speed) {
             for (var i = 0; i < this.revoluteConstraints.length; i++) {
                 this.revoluteConstraints[i].setMotorSpeed(speed);
@@ -266,15 +264,15 @@ var BuggyDemo;
         };
 
         /**
-		 * Accelerates the buggy to the left
-		 */
+         * Accelerates the buggy to the left
+         */
         Buggy.prototype.accelerateLeft = function () {
             this.direction = -1;
         }
 
         /**
-		 * Accelerates the buggy to the right
-		 */
+         * Accelerates the buggy to the right
+         */
         Buggy.prototype.accelerateRight = function () {
             this.direction = 1;
         }

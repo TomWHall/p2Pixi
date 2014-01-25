@@ -1,37 +1,31 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<title>p2Pixi space buggy example</title>
-	
+	<title>p2Pixi.js space buggy demo</title>
+
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<meta name="Keywords" content="p2.js, Pixi.js, JavaScript, WebGL, canvas, HTML5, physics">
-	<meta name="Description" content="An experiment with p2.js and Pixi.js">
-	<meta name="author" content="Tom W Hall"><!-- tomshalls@gmail.com -->
+	<meta name="Keywords" content="p2Pixi.js, p2.js, Pixi.js, JavaScript, WebGL, canvas, HTML5, physics">
+	<meta name="Description" content="An example using p2Pixi.js - a simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering">
+	<meta name="author" content="Tom W Hall">
 
 	<link href="css/normalize.css" rel="stylesheet" />
 	<link href="css/default.css" rel="stylesheet" />
 </head>
 <body>
 	<canvas id="viewport"></canvas>
+	<div id="loading">Loading...</div>
 
-    <!-- Buggy demo / p2Pixi dependencies -->
-	<script src="js/lib/jquery/jquery-2.0.3.min.js"></script>
+	<script src="js/lib/p2/p2.min.js"></script>
 	<script src="js/lib/pixi/pixi.min.js"></script>
-	<script src="js/lib/p2/p2.min.js"></script>  
+	<script src="js/lib/p2Pixi/p2Pixi.min.js"></script>
 	<script src="js/lib/hammer/hammer.min.js"></script>
-    <script src="js/shims/requestAnimationFrame.js"></script>
+	<script src="js/shims/requestAnimationFrame.js"></script>
 
-    <!-- p2Pixi source. TODO: Use minified build output -->
-	<script src="js/lib/p2Pixi/PixiAdapter.js"></script>
-    <script src="js/lib/p2Pixi/GameObject.js"></script>
-    <script src="js/lib/p2Pixi/Game.js"></script>
-
-    <!-- Buggy demo source -->
 	<script src="js/util.js"></script>
 	<script src="js/Terrain.js"></script>
 	<script src="js/Buggy.js"></script>
-    <script src="js/Game.js"></script>
+	<script src="js/Game.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

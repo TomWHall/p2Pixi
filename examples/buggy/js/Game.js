@@ -1,14 +1,12 @@
-﻿/// <reference path="PixiAdapter.js" />
-
-var BuggyDemo;
+﻿var BuggyDemo;
 (function (BuggyDemo) {
     'use strict';
 
     var Game = (function () {
 
         /**
-		 * Creates a new space buggy Game instance
-		 */
+         * Creates a new space buggy Game instance
+         */
         function Game() {
 
             var options = {
@@ -17,7 +15,7 @@ var BuggyDemo;
                 }
                 , pixiOptions: {
                     viewport: document.getElementById('viewport')
-				    , transparent: true
+                    , transparent: true
                 }
                 , imageUrls: [
                     'img/rock.jpg'
@@ -44,14 +42,17 @@ var BuggyDemo;
             }));
 
             this.addHandlers();
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('viewport').style.display = 'block';
         };
 
         /**
-		 * Adds keyboard and touch handlers
-		 */
+         * Adds keyboard and touch handlers
+         */
         Game.prototype.addHandlers = function () {
             var buggy = this.buggy
-				, pixiAdapter = this.pixiAdapter
+                , pixiAdapter = this.pixiAdapter
                 , viewport = document.getElementById('viewport');
 
             document.addEventListener('keydown', function (e) {
@@ -91,8 +92,8 @@ var BuggyDemo;
             }
 
             Hammer(viewport)
-				.on('touch', onCanvasTouchHold)
-				.on('hold', onCanvasTouchHold)
+                .on('touch', onCanvasTouchHold)
+                .on('hold', onCanvasTouchHold)
                 .on('release', onCanvasRelease);
         }
 

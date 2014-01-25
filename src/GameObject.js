@@ -1,16 +1,13 @@
-﻿/// <reference path="lib/pixi/pixi.min.js" />
-/// <reference path="PixiAdapter.js" />
-
-var P2Pixi;
+﻿var P2Pixi;
 (function (P2Pixi) {
     'use strict';
 
     var GameObject = (function () {
 
         /**
-		 * Creates a new GameObject instance
-		 * @param  {Game} game
-		 */
+         * Creates a new GameObject instance
+         * @param  {Game} game
+         */
         function GameObject(game) {
             this.game = game;
 
@@ -21,10 +18,10 @@ var P2Pixi;
         }
 
         /**
-		 * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering
-		 * @param  {Body} body
-		 * @return {GameObject} gameObject
-		 */
+         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering
+         * @param  {Body} body
+         * @return {GameObject} gameObject
+         */
         GameObject.prototype.addBody = function (body) {
             this.bodies.push(body);
             this.displayObjectContainers.push(null);
@@ -79,6 +76,9 @@ var P2Pixi;
             return this;
         }
 
+        /**
+         * Returns the current time in seconds
+         */
         GameObject.prototype.time = function () {
             return new Date().getTime() / 1000;
         };

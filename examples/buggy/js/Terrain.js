@@ -1,6 +1,4 @@
-﻿/// <reference path="../../../src/GameObject.js" />
-
-var BuggyDemo;
+﻿var BuggyDemo;
 (function (BuggyDemo) {
     'use strict';
 
@@ -9,39 +7,39 @@ var BuggyDemo;
         var zero = [0, 0];
 
         /**
-		 * Creates a new Terrain instance
-		 * @param  {Game} game
-		 */
+         * Creates a new Terrain instance
+         * @param  {Game} game
+         */
         function Terrain(game) {
 
             var x
-				, width
-				, cliff
+                , width
+                , cliff
                 , ground
                 , box
-				, angle
-				, rectangle
+                , angle
+                , rectangle
                 , even = true
                 , terrainBodyOptions = {
                     collisionGroup: 1
-			        , collisionMask: 1 | 2
+                    , collisionMask: 1 | 2
                 }
-	            , rockTexture = PIXI.Texture.fromImage('img/rock.jpg', false)
+                , rockTexture = PIXI.Texture.fromImage('img/rock.jpg', false)
 
             P2Pixi.GameObject.call(this, game);
 
             this.rockMaterial = new p2.Material();
-            
+
 
             // Ground
 
             cliff = new p2.Body({
                 mass: 0
-				, position: [0, -10]
+                , position: [0, -10]
             });
 
             this.addBody(cliff)
-			    .addShape(cliff
+                .addShape(cliff
                    , new p2.Rectangle(60, 10)
                    , zero
                    , 0
@@ -55,7 +53,7 @@ var BuggyDemo;
             });
 
             this.addBody(ground)
-			    .addShape(ground
+                .addShape(ground
                    , new p2.Rectangle(1000, 10)
                    , zero
                    , 0
@@ -72,8 +70,8 @@ var BuggyDemo;
 
                 box = new p2.Body({
                     mass: 0
-					, position: [x, -5]
-					, angle: angle
+                    , position: [x, -5]
+                    , angle: angle
                 });
 
                 rectangle = new p2.Rectangle(width, 1);

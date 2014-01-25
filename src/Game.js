@@ -1,14 +1,12 @@
-﻿/// <reference path="PixiAdapter.js" />
-
-var P2Pixi;
+﻿var P2Pixi;
 (function (P2Pixi) {
     'use strict';
 
     var Game = (function () {
 
         /**
-		 * Creates a new Game instance
-		 */
+         * Creates a new Game instance
+         */
         function Game(options) {
 
             options = options || {};
@@ -32,9 +30,9 @@ var P2Pixi;
          */
         Game.prototype.loadImages = function (imageUrls) {
             var self = this
-		        , imagesCount = imageUrls.length
+                , imagesCount = imageUrls.length
                 , imagesLoadedCount = 0
-		        , i
+                , i
                 , imageLoader;
 
             for (i = 0; i < imagesCount; i++) {
@@ -63,18 +61,18 @@ var P2Pixi;
         };
 
         /**
-         * Returns the milliseconds of the current time
+         * Returns the current time in seconds
          */
         Game.prototype.time = function () {
             return new Date().getTime() / 1000;
         };
 
         /**
-		 * Begins the world step / render loop
-		 */
+         * Begins the world step / render loop
+         */
         Game.prototype.run = function () {
             var self = this
-		        , lastCallTime = self.time()
+                , lastCallTime = self.time()
                 , maxSubSteps = 10;
 
             function update() {
@@ -98,19 +96,19 @@ var P2Pixi;
          */
         Game.prototype.render = function () {
             var pixiAdapter = this.pixiAdapter
-				, w = pixiAdapter.renderer.width
-				, h = pixiAdapter.renderer.height
-				, ppu = pixiAdapter.pixelsPerLengthUnit
-				, gameObjects = this.gameObjects
-				, gameObjectCount = gameObjects.length
-				, gameObject
+                , w = pixiAdapter.renderer.width
+                , h = pixiAdapter.renderer.height
+                , ppu = pixiAdapter.pixelsPerLengthUnit
+                , gameObjects = this.gameObjects
+                , gameObjectCount = gameObjects.length
+                , gameObject
                 , gameObjectBodyCount
-				, i
-				, j
+                , i
+                , j
                 , body
                 , displayObjectContainer
                 , trackedBody = this.trackedBody
-				, trackedBodyPosition;
+                , trackedBodyPosition;
 
             for (i = 0; i < gameObjectCount; i++) {
                 gameObject = gameObjects[i];

@@ -28,24 +28,5 @@ obj/
 [Dd]ebug*/
 Ankh.NoLoad
 
-#Tooling
-_ReSharper*/
-*.resharper
-[Tt]est[Rr]esult*
-
-#Project files
-[Bb]uild/
-
-#Subversion files
-.svn
-
-# Office Temp Files
-~$*
-
-# Trigger.IO Forge files
-.lib/
-development/
-.template/
-Bop.Flowers.Forge.v11.suo
-local_config.json
-keystore/
+# Node Modules
+node_modules/*

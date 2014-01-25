@@ -1,0 +1,35 @@
+{
+    "name": "p2Pixi",
+    "version": "0.5.0",
+    "description": "A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering.",
+    "author": "Tom W Hall <tomshalls@gmail.com>",
+    "keywords": [
+        "p2Pixi.js",
+        "p2.js",
+		"Pixi.js",
+        "physics",
+		"game",
+        "engine",
+        "2D"
+    ],
+    "main": "./dist/p2Pixi.js",
+    "engines": {
+        "node": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TomWHall/p2Pixi"
+    },
+    "licenses" : [
+        {
+            "type" : "MIT"
+        }
+    ],
+    "devDependencies" : {
+        "grunt": "~0.4.0",
+        "grunt-contrib-concat": "~0.1.3",
+        "grunt-contrib-uglify": "*"
+    },
+    "dependencies" : {
+    }
+}

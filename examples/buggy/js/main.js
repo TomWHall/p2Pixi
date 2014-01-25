@@ -1,8 +1,8 @@
 ﻿(function () {
-	'use strict';
+    'use strict';
 
-	document.addEventListener('DOMContentLoaded', function () {
-		new BuggyDemo.Game();
-	}, false);
+    document.addEventListener('DOMContentLoaded', function () {
+        new BuggyDemo.Game();
+    }, false);
 
 })();
