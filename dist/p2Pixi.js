@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.0 - 25-01-2014 
+ * p2Pixi v0.5.1 - 29-01-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -656,26 +656,24 @@ var P2Pixi;
 
             var graphics
                 , tilingSprite
-                , ppu
+                , doc
+                , ppu = this.pixelsPerLengthUnit
                 , aabb
                 , width
                 , height
                 , maskGraphics;
 
+            // If a Pixi texture has been specified...
             if (texture) {
-                ppu = this.pixelsPerLengthUnit;
-
+                // Calculate the bounding box of the shape when at zero offset and 0 angle
                 aabb = new p2.AABB();
                 shape.computeAABB(aabb, [0, 0], 0);
-
                 width = aabb.upperBound[0] - aabb.lowerBound[0];
                 height = aabb.upperBound[1] - aabb.lowerBound[1];
 
+                // Create a TilingSprite to cover the entire shape
                 tilingSprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
                 tilingSprite.alpha = alpha || 1;
-                tilingSprite.position.x = (offset[0] * ppu) - (tilingSprite.width / 2);
-                tilingSprite.position.y = -(offset[1] * ppu) - (tilingSprite.height / 2);
-                tilingSprite.rotation = -angle;
 
                 // If the shape is anything other than a rectangle, we need a mask for the texture.
                 // We use the shape itself to create a new Graphics object as a child.
@@ -688,18 +686,44 @@ var P2Pixi;
                     tilingSprite.mask = maskGraphics;
                 }
 
-                displayObjectContainer.addChild(tilingSprite);
+                // Sprite positions are the top-left corner of the sprite, so to line up with our
+                // Graphics-rendered shapes we move the sprite left and up by half its width and height.
+                // If the shape is rotated, we need an extra containing DisplayObjectContainer
+                // to which the shape's offset and angle is applied.
+                // TODO: Test further if we can achieve this without the extra container.
+                if (angle === 0) {
+                    tilingSprite.position.x = (offset[0] * ppu) - (tilingSprite.width / 2);
+                    tilingSprite.position.y = -(offset[1] * ppu) - (tilingSprite.height / 2);
+
+                    displayObjectContainer.addChild(tilingSprite);
+                } else {
+                    tilingSprite.position.x = -(tilingSprite.width / 2);
+                    tilingSprite.position.y = -(tilingSprite.height / 2);
+
+                    doc = new PIXI.DisplayObjectContainer();
+                    doc.addChild(tilingSprite);
+                    doc.position.x = (offset[0] * ppu);
+                    doc.position.y = -(offset[1] * ppu);
+                    doc.rotation = -angle;
+
+                    doc.addChild(tilingSprite);
+                    displayObjectContainer.addChild(doc);
+                }
             }
 
+            // If any Pixi vector styles have been specified...
             if (style) {
                 graphics = new PIXI.Graphics();
                 graphics.alpha = alpha || 1;
+                graphics.position.x = (offset[0] * ppu);
+                graphics.position.y = -(offset[1] * ppu);
+                graphics.rotation = -angle;
                 displayObjectContainer.addChild(graphics);
 
                 this.renderShapeToGraphics(graphics
                     , shape
-                    , offset
-                    , angle
+                    , [0, 0]
+                    , 0
                     , style);
             }
         }
