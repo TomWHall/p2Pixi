@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.1 - 29-01-2014 
+ * p2Pixi v0.5.2 - 30-01-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -328,7 +328,7 @@ var P2Pixi;
          * @param  {Number} radius
          * @param  {object} style
          */
-        PixiAdapter.prototype.drawCircle = function (graphics, x, y, angle, radius, style) {
+        PixiAdapter.prototype.drawCircle = function (graphics, x, y, radius, style) {
             style = style || {};
             var lineWidth = style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
@@ -467,12 +467,11 @@ var P2Pixi;
          * @param  {Graphics} graphics
          * @param  {Number} x
          * @param  {Number} y
-         * @param  {Number} angle
          * @param  {Number} w
          * @param  {Number} h
          * @param  {object} style
          */
-        PixiAdapter.prototype.drawRectangle = function (graphics, x, y, angle, w, h, style) {
+        PixiAdapter.prototype.drawRectangle = function (graphics, x, y, w, h, style) {
             style = style || {};
             var lineWidth = style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
@@ -593,9 +592,9 @@ var P2Pixi;
          * Renders the supplied p2 Shape onto the supplied Pixi Graphics object using the supplied Pixi style properties
          * @param  {Graphics} graphics
          * @param  {Shape} shape
-         * @param  {Object} style
          * @param  {Vector} offset
          * @param  {Number} angle
+         * @param  {Object} style
          */
         PixiAdapter.prototype.renderShapeToGraphics = function (graphics, shape, offset, angle, style) {
             var zero = [0, 0]
@@ -609,10 +608,10 @@ var P2Pixi;
             angle = angle || 0;
 
             if (shape instanceof Circle) {
-                this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, angle, shape.radius * ppu, style);
+                this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.radius * ppu, style);
 
             } else if (shape instanceof Particle) {
-                this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, angle, 2 * lw, style);
+                this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, 2 * lw, style);
 
             } else if (shape instanceof Plane) {
                 // TODO: use shape angle
@@ -622,7 +621,7 @@ var P2Pixi;
                 this.drawLine(graphics, child.length * ppu, style);
 
             } else if (shape instanceof Rectangle) {
-                this.drawRectangle(graphics, offset[0] * ppu, -offset[1] * ppu, angle, shape.width * ppu, shape.height * ppu, style);
+                this.drawRectangle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.width * ppu, shape.height * ppu, style);
 
             } else if (shape instanceof Capsule) {
                 this.drawCapsule(graphics, offset[0] * ppu, -offset[1] * ppu, angle, shape.length * ppu, shape.radius * ppu, style);
@@ -643,7 +642,7 @@ var P2Pixi;
         }
 
         /**
-         * Adds a DisplayObject
+         * Adds the supplied shape to the supplied DisplayObjectContainer, using vectors and / or a texture
          * @param  {DisplayObjectContainer} displayObjectContainer
          * @param  {Shape} shape
          * @param  {Vector} offset
@@ -654,35 +653,55 @@ var P2Pixi;
          */
         PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha) {
 
-            var graphics
+            var zero = [0, 0]
+                , graphics
                 , tilingSprite
                 , doc
                 , ppu = this.pixelsPerLengthUnit
                 , aabb
                 , width
                 , height
+                , left 
+                , top
+                , right
+                , bottom
                 , maskGraphics;
 
             // If a Pixi texture has been specified...
             if (texture) {
                 // Calculate the bounding box of the shape when at zero offset and 0 angle
                 aabb = new p2.AABB();
-                shape.computeAABB(aabb, [0, 0], 0);
-                width = aabb.upperBound[0] - aabb.lowerBound[0];
-                height = aabb.upperBound[1] - aabb.lowerBound[1];
+                shape.computeAABB(aabb, zero, 0);
+
+                // Get world coordinates of shape boundaries
+                left = aabb.lowerBound[0];
+                bottom = aabb.lowerBound[1];
+                right = aabb.upperBound[0];
+                top = aabb.upperBound[1];
+
+                width = right - left;
+                height = top - bottom;
 
                 // Create a TilingSprite to cover the entire shape
                 tilingSprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
                 tilingSprite.alpha = alpha || 1;
 
                 // If the shape is anything other than a rectangle, we need a mask for the texture.
-                // We use the shape itself to create a new Graphics object as a child.
+                // We use the shape itself to create a new Graphics object.
                 if (!(shape instanceof Rectangle)) {
                     maskGraphics = new PIXI.Graphics();
                     maskGraphics.renderable = false;
-                    this.renderShapeToGraphics(maskGraphics, shape, [(width / 2), -(height / 2)], 0, { lineWidth: 0, fillColor: 0xffffff });
+                    maskGraphics.position.x = (offset[0] * ppu);
+                    maskGraphics.position.y = -(offset[1] * ppu);
+                    maskGraphics.rotation = -angle;
 
-                    tilingSprite.addChild(maskGraphics);
+                    this.renderShapeToGraphics(maskGraphics
+                        , shape
+                        , zero
+                        , 0
+                        , { lineWidth: 0, fillColor: 0xffffff });
+
+                    displayObjectContainer.addChild(maskGraphics);
                     tilingSprite.mask = maskGraphics;
                 }
 
@@ -690,15 +709,15 @@ var P2Pixi;
                 // Graphics-rendered shapes we move the sprite left and up by half its width and height.
                 // If the shape is rotated, we need an extra containing DisplayObjectContainer
                 // to which the shape's offset and angle is applied.
-                // TODO: Test further if we can achieve this without the extra container.
                 if (angle === 0) {
-                    tilingSprite.position.x = (offset[0] * ppu) - (tilingSprite.width / 2);
-                    tilingSprite.position.y = -(offset[1] * ppu) - (tilingSprite.height / 2);
+                    tilingSprite.position.x = (left * ppu) + (offset[0] * ppu);
+                    tilingSprite.position.y = -(top * ppu) - (offset[1] * ppu);
+                    tilingSprite.rotation = -angle;
 
                     displayObjectContainer.addChild(tilingSprite);
                 } else {
-                    tilingSprite.position.x = -(tilingSprite.width / 2);
-                    tilingSprite.position.y = -(tilingSprite.height / 2);
+                    tilingSprite.position.x = (left * ppu);
+                    tilingSprite.position.y = -(top * ppu);
 
                     doc = new PIXI.DisplayObjectContainer();
                     doc.addChild(tilingSprite);
@@ -718,13 +737,14 @@ var P2Pixi;
                 graphics.position.x = (offset[0] * ppu);
                 graphics.position.y = -(offset[1] * ppu);
                 graphics.rotation = -angle;
-                displayObjectContainer.addChild(graphics);
 
                 this.renderShapeToGraphics(graphics
                     , shape
-                    , [0, 0]
+                    , zero
                     , 0
                     , style);
+
+                displayObjectContainer.addChild(graphics);
             }
         }
 
