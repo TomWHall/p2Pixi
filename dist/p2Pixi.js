@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.2 - 30-01-2014 
+ * p2Pixi v0.5.2 - 20-02-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -705,10 +705,8 @@ var P2Pixi;
                     tilingSprite.mask = maskGraphics;
                 }
 
-                // Sprite positions are the top-left corner of the sprite, so to line up with our
-                // Graphics-rendered shapes we move the sprite left and up by half its width and height.
-                // If the shape is rotated, we need an extra containing DisplayObjectContainer
-                // to which the shape's offset and angle is applied.
+                // Sprite positions are the top-left corner of the Sprite, whereas Graphics objects
+                // are positioned at their origin
                 if (angle === 0) {
                     tilingSprite.position.x = (left * ppu) + (offset[0] * ppu);
                     tilingSprite.position.y = -(top * ppu) - (offset[1] * ppu);
