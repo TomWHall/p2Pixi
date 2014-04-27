@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.2 - 20-02-2014 
+ * p2Pixi v0.5.3 - 27-04-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -22,6 +22,7 @@ var P2Pixi;
 
             this.gameObjects = [];
             this.trackedBody = null;
+            this.trackedBodyOffset = [0.5, 0.5];
             this.paused = false;
 
             if (options.imageUrls) {
@@ -114,6 +115,7 @@ var P2Pixi;
                 , body
                 , displayObjectContainer
                 , trackedBody = this.trackedBody
+                , trackedBodyOffset = this.trackedBodyOffset
                 , trackedBodyPosition;
 
             for (i = 0; i < gameObjectCount; i++) {
@@ -134,8 +136,8 @@ var P2Pixi;
             // Scroll viewport to track focused body if set
             if (trackedBody !== null) {
                 trackedBodyPosition = trackedBody.position;
-                pixiAdapter.stage.position.x = (pixiAdapter.renderer.width / 2) - (trackedBodyPosition[0] * ppu);
-                pixiAdapter.stage.position.y = -(pixiAdapter.renderer.height / 2) + (trackedBodyPosition[1] * ppu);
+                pixiAdapter.stage.position.x = (pixiAdapter.renderer.width * trackedBodyOffset[0]) - (trackedBodyPosition[0] * ppu);
+                pixiAdapter.stage.position.y = -(pixiAdapter.renderer.height * (1 - trackedBodyOffset[1])) + (trackedBodyPosition[1] * ppu);
             }
 
             pixiAdapter.renderer.render(pixiAdapter.container);

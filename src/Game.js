@@ -16,6 +16,7 @@
 
             this.gameObjects = [];
             this.trackedBody = null;
+            this.trackedBodyOffset = [0.5, 0.5];
             this.paused = false;
 
             if (options.imageUrls) {
@@ -108,6 +109,7 @@
                 , body
                 , displayObjectContainer
                 , trackedBody = this.trackedBody
+                , trackedBodyOffset = this.trackedBodyOffset
                 , trackedBodyPosition;
 
             for (i = 0; i < gameObjectCount; i++) {
@@ -128,8 +130,8 @@
             // Scroll viewport to track focused body if set
             if (trackedBody !== null) {
                 trackedBodyPosition = trackedBody.position;
-                pixiAdapter.stage.position.x = (pixiAdapter.renderer.width / 2) - (trackedBodyPosition[0] * ppu);
-                pixiAdapter.stage.position.y = -(pixiAdapter.renderer.height / 2) + (trackedBodyPosition[1] * ppu);
+                pixiAdapter.stage.position.x = (pixiAdapter.renderer.width * trackedBodyOffset[0]) - (trackedBodyPosition[0] * ppu);
+                pixiAdapter.stage.position.y = -(pixiAdapter.renderer.height * (1 - trackedBodyOffset[1])) + (trackedBodyPosition[1] * ppu);
             }
 
             pixiAdapter.renderer.render(pixiAdapter.container);
