@@ -27,6 +27,35 @@
         }
 
         /**
+         * Adds the supplied GameObject
+         */
+        Game.prototype.addGameObject = function(gameObject) {
+            this.gameObjects.push(gameObject);
+        }
+
+        /**
+         * Removes the supplied GameObject
+         */
+        Game.prototype.removeGameObject = function(gameObject) {     
+            var index = this.gameObjects.indexOf(gameObject)
+                , i
+                , body
+                , doc;
+
+            if (index !== -1) {
+                for (i = 0; i < gameObject.bodies.length; i++) {
+                    body = gameObject.bodies[i];
+                    doc = gameObject.displayObjectContainers[i];
+
+                    this.world.removeBody(body);
+                    this.pixiAdapter.stage.removeChild(doc);
+                }
+
+                this.gameObjects.splice(index, 1);
+            }
+        }
+
+        /**
          * Loads the supplied images asyncronously
          */
         Game.prototype.loadImages = function (imageUrls) {

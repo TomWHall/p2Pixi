@@ -14,7 +14,7 @@
             this.bodies = []; // p2 physics bodies
             this.displayObjectContainers = []; // Pixi DisplayObjectContainers, one for each body. Each contains a child array of Graphics and / or Sprites.
 
-            game.gameObjects.push(this);
+            game.addGameObject(this);
         }
 
         /**

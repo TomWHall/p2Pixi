@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.3 - 27-04-2014 
+ * p2Pixi v0.5.4 - 29-04-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -29,6 +29,35 @@ var P2Pixi;
                 this.loadImages(options.imageUrls);
             } else {
                 this.assetsLoaded();
+            }
+        }
+
+        /**
+         * Adds the supplied GameObject
+         */
+        Game.prototype.addGameObject = function(gameObject) {
+            this.gameObjects.push(gameObject);
+        }
+
+        /**
+         * Removes the supplied GameObject
+         */
+        Game.prototype.removeGameObject = function(gameObject) {     
+            var index = this.gameObjects.indexOf(gameObject)
+                , i
+                , body
+                , doc;
+
+            if (index !== -1) {
+                for (i = 0; i < gameObject.bodies.length; i++) {
+                    body = gameObject.bodies[i];
+                    doc = gameObject.displayObjectContainers[i];
+
+                    this.world.removeBody(body);
+                    this.pixiAdapter.stage.removeChild(doc);
+                }
+
+                this.gameObjects.splice(index, 1);
             }
         }
 
@@ -164,7 +193,7 @@ var P2Pixi;
             this.bodies = []; // p2 physics bodies
             this.displayObjectContainers = []; // Pixi DisplayObjectContainers, one for each body. Each contains a child array of Graphics and / or Sprites.
 
-            game.gameObjects.push(this);
+            game.addGameObject(this);
         }
 
         /**
