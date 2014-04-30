@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.4 - 29-04-2014 
+ * p2Pixi v0.5.5 - 30-04-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -331,6 +331,8 @@ var P2Pixi;
 
             this.windowWidth = getWindowWidth();
             this.windowHeight = getWindowHeight();
+            this.viewWidth = 0;
+            this.viewHeight = 0;
             this.resize(this.windowWidth, this.windowHeight);
 
             window.addEventListener('resize', resizeRenderer);
@@ -793,15 +795,23 @@ var P2Pixi;
 
             if (ratio > pixiRatio) { // Screen is wider than the renderer
 
-                view.style.height = h + 'px';
-                view.style.width = (h * pixiRatio) + 'px';
-                view.style.left = ((w - h * pixiRatio) / 2) + 'px';
+                this.viewWidth = h * pixiRatio;
+                this.viewHeight = h;
+
+                view.style.width = this.viewWidth + 'px';
+                view.style.height = this.viewHeight + 'px';
+                view.style.left = ((w - this.viewWidth) / 2) + 'px';
+                view.style.top = null;
 
             } else { // Screen is narrower
 
-                view.style.height = (w / pixiRatio) + 'px';
-                view.style.width = w + 'px';
-                view.style.top = ((h - w / pixiRatio) / 2) + 'px';
+                this.viewWidth = w;
+                this.viewHeight = w / pixiRatio;
+
+                view.style.width = this.viewWidth + 'px';
+                view.style.height = this.viewHeight + 'px';
+                view.style.left = null;            
+                view.style.top = ((h - this.viewHeight) / 2) + 'px';
 
             }
         };
