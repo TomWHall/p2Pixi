@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.5 - 30-04-2014 
+ * p2Pixi v0.5.6 - 01-05-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -128,6 +128,32 @@ var P2Pixi;
         };
 
         /**
+         * Called before the Pixi renderer renders
+         */
+        Game.prototype.beforePixiRender = function () {
+            var trackedBody = this.trackedBody
+                , pixiAdapter
+                , renderer
+                , ppu
+                , stagePosition 
+                , trackedBodyPosition
+                , trackedBodyOffset;
+
+            // Focus tracked body, if set
+            if (trackedBody !== null) {
+                pixiAdapter = this.pixiAdapter;
+                renderer = pixiAdapter.renderer;
+                ppu = pixiAdapter.pixelsPerLengthUnit;
+                stagePosition = pixiAdapter.stage.position;
+                trackedBodyPosition = trackedBody.position;
+                trackedBodyOffset = this.trackedBodyOffset;
+
+                stagePosition.x = (renderer.width * trackedBodyOffset[0]) - (trackedBodyPosition[0] * ppu);
+                stagePosition.y = -(renderer.height * (1 - trackedBodyOffset[1])) + (trackedBodyPosition[1] * ppu);
+            }
+        }
+
+        /**
          * Updates the Pixi representation of the world
          */
         Game.prototype.render = function () {
@@ -142,10 +168,7 @@ var P2Pixi;
                 , i
                 , j
                 , body
-                , displayObjectContainer
-                , trackedBody = this.trackedBody
-                , trackedBodyOffset = this.trackedBodyOffset
-                , trackedBodyPosition;
+                , displayObjectContainer;
 
             for (i = 0; i < gameObjectCount; i++) {
                 gameObject = gameObjects[i];
@@ -162,12 +185,7 @@ var P2Pixi;
                 }
             }
 
-            // Scroll viewport to track focused body if set
-            if (trackedBody !== null) {
-                trackedBodyPosition = trackedBody.position;
-                pixiAdapter.stage.position.x = (pixiAdapter.renderer.width * trackedBodyOffset[0]) - (trackedBodyPosition[0] * ppu);
-                pixiAdapter.stage.position.y = -(pixiAdapter.renderer.height * (1 - trackedBodyOffset[1])) + (trackedBodyPosition[1] * ppu);
-            }
+            this.beforePixiRender();
 
             pixiAdapter.renderer.render(pixiAdapter.container);
         }
