@@ -13,6 +13,7 @@ var P2Pixi;
             , Rectangle = p2.Rectangle
             , Particle = p2.Particle
             , Line = p2.Line
+            , Heightfield = p2.Heightfield
             , EventEmitter = p2.EventEmitter
             , init_stagePosition = vec2.create()
             , init_physicsPosition = vec2.create();
@@ -365,6 +366,8 @@ var P2Pixi;
                 , ppu = this.pixelsPerLengthUnit
                 , verts
                 , vrot
+                , path
+                , data
                 , i
                 , v;
 
@@ -402,6 +405,17 @@ var P2Pixi;
                 }
 
                 this.drawConvex(graphics, verts, style);
+            } else if(shape instanceof Heightfield){
+                path = [[0, 100 * ppu]];
+                data = shape.data;
+
+                for (i = 0; i < data.length; i++){
+                    v = data[i];
+                    path.push([i * shape.elementWidth * ppu, -v * ppu]);
+                }
+
+                path.push([data.length * shape.elementWidth * ppu, 100 * ppu]);
+                this.drawPath(graphics, path, style);
             }
         }
 
@@ -442,6 +456,11 @@ var P2Pixi;
                 bottom = aabb.lowerBound[1];
                 right = aabb.upperBound[0];
                 top = aabb.upperBound[1];
+
+                // Cater for Heightfield shapes, which have a lower bound of negative infinity
+                if (bottom === Number.NEGATIVE_INFINITY) {
+                    bottom = -(this.settings.height / ppu);
+                }
 
                 width = right - left;
                 height = top - bottom;

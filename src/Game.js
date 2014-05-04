@@ -112,9 +112,12 @@
                     timeSinceLastCall = self.time() - lastCallTime;
                     lastCallTime = self.time();
                     self.world.step(1 / 60, timeSinceLastCall, maxSubSteps);
+
+                    self.beforeRender();
+                    self.render();
+                    self.afterRender();
                 }
 
-                self.render();
                 requestAnimationFrame(update);
             }
 
@@ -122,9 +125,9 @@
         };
 
         /**
-         * Called before the Pixi renderer renders
+         * Called before rendering
          */
-        Game.prototype.beforePixiRender = function () {
+        Game.prototype.beforeRender = function () {
             var trackedBody = this.trackedBody
                 , pixiAdapter
                 , renderer
@@ -179,10 +182,13 @@
                 }
             }
 
-            this.beforePixiRender();
-
             pixiAdapter.renderer.render(pixiAdapter.container);
         }
+
+        /**
+         * Called after rendering
+         */
+        Game.prototype.afterRender = function () { };
 
         return Game;
     })();
