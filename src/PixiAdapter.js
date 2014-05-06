@@ -159,7 +159,7 @@ var P2Pixi;
             var lineWidth = style.lineWidth || 1
                 , lineColor = style.lineColor || 0x000000;
 
-            graphics.lineStyle(lineWidth, lineColor, opacity);
+            graphics.lineStyle(lineWidth, lineColor, 1);
 
             graphics.moveTo(-len / 2, 0);
             graphics.lineTo(len / 2, 0);
@@ -385,7 +385,7 @@ var P2Pixi;
                 this.drawPlane(graphics, -10 * ppu, 10 * ppu, style);
 
             } else if (shape instanceof Line) {
-                this.drawLine(graphics, child.length * ppu, style);
+                this.drawLine(graphics, shape.length * ppu, style);
 
             } else if (shape instanceof Rectangle) {
                 this.drawRectangle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.width * ppu, shape.height * ppu, style);

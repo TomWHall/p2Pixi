@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.7 - 04-05-2014 
+ * p2Pixi v0.5.8 - 06-05-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -452,7 +452,7 @@ var P2Pixi;
             var lineWidth = style.lineWidth || 1
                 , lineColor = style.lineColor || 0x000000;
 
-            graphics.lineStyle(lineWidth, lineColor, opacity);
+            graphics.lineStyle(lineWidth, lineColor, 1);
 
             graphics.moveTo(-len / 2, 0);
             graphics.lineTo(len / 2, 0);
@@ -678,7 +678,7 @@ var P2Pixi;
                 this.drawPlane(graphics, -10 * ppu, 10 * ppu, style);
 
             } else if (shape instanceof Line) {
-                this.drawLine(graphics, child.length * ppu, style);
+                this.drawLine(graphics, shape.length * ppu, style);
 
             } else if (shape instanceof Rectangle) {
                 this.drawRectangle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.width * ppu, shape.height * ppu, style);
