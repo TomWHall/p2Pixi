@@ -53,7 +53,7 @@ Adds the supplied p2 shape to the supplied p2 body.
 
 
 ##PixiAdapter
-Handles rendering of p2 shapes into Pixi objects such as Graphics (for vector rendering) and / or TlingSprite (for bitmap rendering).
+Handles rendering of p2 shapes into Pixi objects such as Graphics (for vector rendering) and / or TilingSprite (for bitmap rendering).
 
 
 ###addShape
