@@ -4,8 +4,6 @@
 
     var Buggy = (function () {
 
-        var zero = [0, 0];
-
         /**
          * Creates a new Buggy instance
          * @param  {Game} game
@@ -19,8 +17,7 @@
                 revoluteConstraint.enableMotor();
                 revoluteConstraint.setMotorSpeed(0);
 
-                this.revoluteConstraints.push(revoluteConstraint);
-                game.world.addConstraint(revoluteConstraint);
+                this.addConstraint(revoluteConstraint);
             }
 
             var self = this
@@ -76,7 +73,7 @@
                     , 0.9)
                 .addShape(chassis
                     , new p2.Convex([[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]])
-                    , zero
+                    , [0, 0]
                     , 0
                     , buggyBodyShapeOptions
                     , {
@@ -105,7 +102,7 @@
             this.addBody(leftSuspensionBar)
                 .addShape(leftSuspensionBar
                     , new p2.Rectangle(0.5, 0.07)
-                    , zero
+                    , [0, 0]
                     , 0
                     , buggyBodyShapeOptions
                     , {
@@ -124,7 +121,7 @@
             this.addBody(rightSuspensionBar)
                 .addShape(rightSuspensionBar
                     , new p2.Rectangle(0.5, 0.07)
-                    , zero
+                    , [0, 0]
                     , 0
                     , buggyBodyShapeOptions
                     , {
@@ -172,14 +169,14 @@
                 this.addBody(wheel)
                      .addShape(wheel // Tyre
                         , tyre
-                        , zero
+                        , [0, 0]
                         , 0
                         , buggyBodyShapeOptions
                         , null
                         , tyreTexture)
                     .addShape(wheel // Hub
                         , new p2.Circle(0.1)
-                        , zero
+                        , [0, 0]
                         , 0
                         , buggyBodyShapeOptions
                         , {
@@ -188,7 +185,7 @@
                         , null)
                     .addShape(wheel // Hub detail
                         , new p2.Rectangle(0.12, 0.025)
-                        , zero
+                        , [0, 0]
                         , 0
                         , buggyBodyShapeOptions
                         , {
@@ -200,7 +197,6 @@
 
             // Connect wheels to suspension bars, with motors
 
-            this.revoluteConstraints = [];
             addMotorizedRevoluteConstraint.call(this, leftSuspensionBar, [-0.25, 0], leftOuterWheel, [0, 0]);
             addMotorizedRevoluteConstraint.call(this, leftSuspensionBar, [0.25, 0], leftInnerWheel, [0, 0]);
             addMotorizedRevoluteConstraint.call(this, rightSuspensionBar, [-0.25, 0], rightInnerWheel, [0, 0]);
@@ -250,7 +246,7 @@
          * @return {Number} speed
          */
         Buggy.prototype.getSpeed = function () {
-            return this.revoluteConstraints[0].getMotorSpeed();
+            return this.constraints[0].getMotorSpeed();
         };
 
         /**
@@ -258,8 +254,8 @@
          * @param  {Number} speed
          */
         Buggy.prototype.setSpeed = function (speed) {
-            for (var i = 0; i < this.revoluteConstraints.length; i++) {
-                this.revoluteConstraints[i].setMotorSpeed(speed);
+            for (var i = 0; i < this.constraints.length; i++) {
+                this.constraints[i].setMotorSpeed(speed);
             }
         };
 

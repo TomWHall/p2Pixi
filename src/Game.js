@@ -40,9 +40,18 @@
             var index = this.gameObjects.indexOf(gameObject)
                 , i
                 , body
+                , constraint
                 , doc;
 
             if (index !== -1) {
+                // Remove p2 constraints from the world
+                for (i = 0; i < gameObject.constraints.length; i++) {
+                    constraint = gameObject.constraints[i];
+
+                    this.world.removeConstraint(constraint);
+                }
+
+                // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
                 for (i = 0; i < gameObject.bodies.length; i++) {
                     body = gameObject.bodies[i];
                     doc = gameObject.displayObjectContainers[i];

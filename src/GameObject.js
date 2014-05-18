@@ -12,13 +12,15 @@
             this.game = game;
 
             this.bodies = []; // p2 physics bodies
+            this.constraints = []; // p2 constraints
             this.displayObjectContainers = []; // Pixi DisplayObjectContainers, one for each body. Each contains a child array of Graphics and / or Sprites.
 
             game.addGameObject(this);
         }
 
         /**
-         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering
+         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering.
+         * Also adds the body to this GameObject's bodies collection
          * @param  {Body} body
          * @return {GameObject} gameObject
          */
@@ -75,6 +77,19 @@
 
             return this;
         }
+
+        /**
+         * Adds the supplied p2 constraint to the game's world and to this GameObject's constraints collection
+         * @param  {Constraint} constraint
+         * @return {GameObject} gameObject
+         */
+        GameObject.prototype.addConstraint = function (constraint) {
+            this.constraints.push(constraint);
+
+            this.game.world.addConstraint(constraint);
+
+            return this;
+        };
 
         /**
          * Returns the current time in seconds

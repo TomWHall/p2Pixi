@@ -2,11 +2,9 @@
 
 A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering.
 
-Live demos:
+Live demo:
 
 - http://booleanoperations.co.nz/experiments/p2/buggy/
-
-- http://booleanoperations.co.nz/Experiments/p2/buggyHeightfield/
 
 
 Here is a brief overview of the 3 classes and their key methods:
@@ -18,7 +16,7 @@ Serves as an abstract base class for your own game. Refer to the "space buggy" d
 Adds the supplied GameObject to the Game.
 
 ###removeGameObject
-Removes the supplied GameObject from the Game, which results in the removal of its bodies from the p2 physics world and those bodies' shapes from the Pixi rendering stage.
+Removes the supplied GameObject from the Game, which results in the removal of its bodies and constraints from the p2 physics world and the bodies' shapes from the Pixi rendering stage.
 
 ###loadImages
 Loads the supplied images asyncronously with a Pixi ImageLoader, for use in textures.
@@ -50,6 +48,9 @@ Adds the supplied p2 body to the GameObject and to the game's world, and creates
 
 ###addShape
 Adds the supplied p2 shape to the supplied p2 body.
+
+###addConstraint
+Adds the supplied p2 constraint to the GameObject and to the game's world.
 
 
 ##PixiAdapter

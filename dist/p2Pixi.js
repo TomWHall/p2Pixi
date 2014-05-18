@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.8 - 06-05-2014 
+ * p2Pixi v0.5.9 - 18-05-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -46,9 +46,18 @@ var P2Pixi;
             var index = this.gameObjects.indexOf(gameObject)
                 , i
                 , body
+                , constraint
                 , doc;
 
             if (index !== -1) {
+                // Remove p2 constraints from the world
+                for (i = 0; i < gameObject.constraints.length; i++) {
+                    constraint = gameObject.constraints[i];
+
+                    this.world.removeConstraint(constraint);
+                }
+
+                // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
                 for (i = 0; i < gameObject.bodies.length; i++) {
                     body = gameObject.bodies[i];
                     doc = gameObject.displayObjectContainers[i];
@@ -215,13 +224,15 @@ var P2Pixi;
             this.game = game;
 
             this.bodies = []; // p2 physics bodies
+            this.constraints = []; // p2 constraints
             this.displayObjectContainers = []; // Pixi DisplayObjectContainers, one for each body. Each contains a child array of Graphics and / or Sprites.
 
             game.addGameObject(this);
         }
 
         /**
-         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering
+         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering.
+         * Also adds the body to this GameObject's bodies collection
          * @param  {Body} body
          * @return {GameObject} gameObject
          */
@@ -278,6 +289,19 @@ var P2Pixi;
 
             return this;
         }
+
+        /**
+         * Adds the supplied p2 constraint to the game's world and to this GameObject's constraints collection
+         * @param  {Constraint} constraint
+         * @return {GameObject} gameObject
+         */
+        GameObject.prototype.addConstraint = function (constraint) {
+            this.constraints.push(constraint);
+
+            this.game.world.addConstraint(constraint);
+
+            return this;
+        };
 
         /**
          * Returns the current time in seconds
