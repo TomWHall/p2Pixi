@@ -19,11 +19,15 @@
             this.trackedBodyOffset = [0.5, 0.5];
             this.paused = false;
 
+            this.imagesLoaded = false;
+
             if (options.imageUrls) {
                 this.loadImages(options.imageUrls);
             } else {
-                this.assetsLoaded();
+                this.imagesLoaded = true;
             }
+
+            this.runIfAssetsLoaded();
         }
 
         /**
@@ -79,7 +83,8 @@
                 imageLoader.addEventListener('loaded', function (e) {
                     imagesLoadedCount++;
                     if (imagesLoadedCount === imagesCount) {
-                        self.assetsLoaded();
+                        self.imagesLoaded = true;
+                        self.runIfAssetsLoaded();
                     }
                 });
                 imageLoader.load();
@@ -92,11 +97,13 @@
         Game.prototype.beforeRun = function () { };
 
         /**
-         * Called when all assets are loaded
+         * Checks if all assets are loaded and if so, runs the game
          */
-        Game.prototype.assetsLoaded = function () {
-            this.beforeRun();
-            this.run();
+        Game.prototype.runIfAssetsLoaded = function () {
+            if (this.imagesLoaded) {
+                this.beforeRun();
+                this.run();
+            }
         };
 
         /**
@@ -198,6 +205,17 @@
          * Called after rendering
          */
         Game.prototype.afterRender = function () { };
+
+        /**
+         * Removes all GameObjects
+         */
+        Game.prototype.clear = function () {
+            var i;
+
+            for (i = 0; i < this.gameObjects.length; i++) {
+                this.removeGameObject(this.gameObjects[i]);
+            }
+        };
 
         return Game;
     })();

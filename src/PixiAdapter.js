@@ -95,7 +95,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawCircle = function (graphics, x, y, radius, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -123,7 +123,7 @@ var P2Pixi;
         PixiAdapter.prototype.drawPlane = function (graphics, x0, x1, color, style) {
             style = style || {};
             var max = 1e6
-                , lineWidth = style.lineWidth || 0
+                , lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -156,7 +156,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawLine = function (graphics, len, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 1
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 1
                 , lineColor = style.lineColor || 0x000000;
 
             graphics.lineStyle(lineWidth, lineColor, 1);
@@ -179,7 +179,7 @@ var P2Pixi;
             style = style || {};
             var c = Math.cos(angle)
                 , s = Math.sin(angle)
-                , lineWidth = style.lineWidth || 0
+                , lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -238,7 +238,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawRectangle = function (graphics, x, y, w, h, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -263,7 +263,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawConvex = function (graphics, verts, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -303,7 +303,7 @@ var P2Pixi;
         PixiAdapter.prototype.drawPath = function (graphics, path, style) {
             style = style || {};
 
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 

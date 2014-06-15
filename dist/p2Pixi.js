@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.5.9 - 18-05-2014 
+ * p2Pixi v0.6.0 - 15-06-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -25,11 +25,15 @@ var P2Pixi;
             this.trackedBodyOffset = [0.5, 0.5];
             this.paused = false;
 
+            this.imagesLoaded = false;
+
             if (options.imageUrls) {
                 this.loadImages(options.imageUrls);
             } else {
-                this.assetsLoaded();
+                this.imagesLoaded = true;
             }
+
+            this.runIfAssetsLoaded();
         }
 
         /**
@@ -85,7 +89,8 @@ var P2Pixi;
                 imageLoader.addEventListener('loaded', function (e) {
                     imagesLoadedCount++;
                     if (imagesLoadedCount === imagesCount) {
-                        self.assetsLoaded();
+                        self.imagesLoaded = true;
+                        self.runIfAssetsLoaded();
                     }
                 });
                 imageLoader.load();
@@ -98,11 +103,13 @@ var P2Pixi;
         Game.prototype.beforeRun = function () { };
 
         /**
-         * Called when all assets are loaded
+         * Checks if all assets are loaded and if so, runs the game
          */
-        Game.prototype.assetsLoaded = function () {
-            this.beforeRun();
-            this.run();
+        Game.prototype.runIfAssetsLoaded = function () {
+            if (this.imagesLoaded) {
+                this.beforeRun();
+                this.run();
+            }
         };
 
         /**
@@ -204,6 +211,17 @@ var P2Pixi;
          * Called after rendering
          */
         Game.prototype.afterRender = function () { };
+
+        /**
+         * Removes all GameObjects
+         */
+        Game.prototype.clear = function () {
+            var i;
+
+            for (i = 0; i < this.gameObjects.length; i++) {
+                this.removeGameObject(this.gameObjects[i]);
+            }
+        };
 
         return Game;
     })();
@@ -412,7 +430,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawCircle = function (graphics, x, y, radius, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -440,7 +458,7 @@ var P2Pixi;
         PixiAdapter.prototype.drawPlane = function (graphics, x0, x1, color, style) {
             style = style || {};
             var max = 1e6
-                , lineWidth = style.lineWidth || 0
+                , lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -473,7 +491,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawLine = function (graphics, len, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 1
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 1
                 , lineColor = style.lineColor || 0x000000;
 
             graphics.lineStyle(lineWidth, lineColor, 1);
@@ -496,7 +514,7 @@ var P2Pixi;
             style = style || {};
             var c = Math.cos(angle)
                 , s = Math.sin(angle)
-                , lineWidth = style.lineWidth || 0
+                , lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -555,7 +573,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawRectangle = function (graphics, x, y, w, h, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -580,7 +598,7 @@ var P2Pixi;
          */
         PixiAdapter.prototype.drawConvex = function (graphics, verts, style) {
             style = style || {};
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 
@@ -620,7 +638,7 @@ var P2Pixi;
         PixiAdapter.prototype.drawPath = function (graphics, path, style) {
             style = style || {};
 
-            var lineWidth = style.lineWidth || 0
+            var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0
                 , lineColor = style.lineColor || 0x000000
                 , fillColor = style.fillColor;
 

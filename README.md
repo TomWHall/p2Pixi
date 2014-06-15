@@ -49,6 +49,21 @@ Adds the supplied p2 body to the GameObject and to the game's world, and creates
 ###addShape
 Adds the supplied p2 shape to the supplied p2 body.
 
+When specifying styles via the styles parameter, lineWidth can either be specified as a Pixi line width, for example:
+
+{ 
+    lineWidth: 1
+}
+
+Or in p2 units, which take precedence, like so:
+
+{ 
+    lineWidthUnits: 0.0078125
+}
+
+Using Pixi's lineWidth means that regardless of your pixelsPerLengthUnit value, any shape outlines (if defined) will have a fixed pixel width.
+Using p2 units means that if you decide to change your pixelsPerLengthUnit value then all line thicknesses will scale accordingly.
+
 ###addConstraint
 Adds the supplied p2 constraint to the GameObject and to the game's world.
 
