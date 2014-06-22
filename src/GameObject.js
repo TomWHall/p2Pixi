@@ -25,10 +25,13 @@
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addBody = function (body) {
-            this.bodies.push(body);
-            this.displayObjectContainers.push(null);
+            var displayObjectContainer = new PIXI.DisplayObjectContainer();
 
+            this.bodies.push(body);
             this.game.world.addBody(body);
+
+            this.displayObjectContainers.push(displayObjectContainer);
+            this.game.pixiAdapter.stage.addChild(displayObjectContainer);
 
             return this;
         };
@@ -61,11 +64,6 @@
             body.addShape(shape, offset, angle);
 
             displayObjectContainer = this.displayObjectContainers[this.bodies.indexOf(body)];
-            if (displayObjectContainer === null) {
-                displayObjectContainer = new PIXI.DisplayObjectContainer();
-                this.displayObjectContainers[this.bodies.indexOf(body)] = displayObjectContainer;
-                this.game.pixiAdapter.stage.addChild(displayObjectContainer);
-            }
 
             this.game.pixiAdapter.addShape(displayObjectContainer
                 , shape

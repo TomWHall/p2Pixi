@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.6.0 - 15-06-2014 
+ * p2Pixi v0.6.1 - 22-06-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -255,10 +255,13 @@ var P2Pixi;
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addBody = function (body) {
-            this.bodies.push(body);
-            this.displayObjectContainers.push(null);
+            var displayObjectContainer = new PIXI.DisplayObjectContainer();
 
+            this.bodies.push(body);
             this.game.world.addBody(body);
+
+            this.displayObjectContainers.push(displayObjectContainer);
+            this.game.pixiAdapter.stage.addChild(displayObjectContainer);
 
             return this;
         };
@@ -291,11 +294,6 @@ var P2Pixi;
             body.addShape(shape, offset, angle);
 
             displayObjectContainer = this.displayObjectContainers[this.bodies.indexOf(body)];
-            if (displayObjectContainer === null) {
-                displayObjectContainer = new PIXI.DisplayObjectContainer();
-                this.displayObjectContainers[this.bodies.indexOf(body)] = displayObjectContainer;
-                this.game.pixiAdapter.stage.addChild(displayObjectContainer);
-            }
 
             this.game.pixiAdapter.addShape(displayObjectContainer
                 , shape
