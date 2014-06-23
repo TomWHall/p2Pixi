@@ -210,10 +210,8 @@
          * Removes all GameObjects
          */
         Game.prototype.clear = function () {
-            var i;
-
-            for (i = 0; i < this.gameObjects.length; i++) {
-                this.removeGameObject(this.gameObjects[i]);
+            while (this.gameObjects.length > 0) {
+                this.removeGameObject(this.gameObjects[0]);
             }
         };
 

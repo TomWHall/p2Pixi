@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.6.1 - 22-06-2014 
+ * p2Pixi v0.6.2 - 23-06-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -216,10 +216,8 @@ var P2Pixi;
          * Removes all GameObjects
          */
         Game.prototype.clear = function () {
-            var i;
-
-            for (i = 0; i < this.gameObjects.length; i++) {
-                this.removeGameObject(this.gameObjects[i]);
+            while (this.gameObjects.length > 0) {
+                this.removeGameObject(this.gameObjects[0]);
             }
         };
 
