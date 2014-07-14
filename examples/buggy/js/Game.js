@@ -53,7 +53,7 @@
         Game.prototype.addHandlers = function () {
             var buggy = this.buggy
                 , pixiAdapter = this.pixiAdapter
-                , viewport = document.getElementById('viewport');
+                , view = pixiAdapter.renderer.view;
 
             document.addEventListener('keydown', function (e) {
                 var keyID = window.event ? event.keyCode : (e.keyCode !== 0 ? e.keyCode : e.which);
@@ -91,7 +91,7 @@
                 buggy.endAcceleration();
             }
 
-            Hammer(viewport)
+            Hammer(view)
                 .on('touch', onCanvasTouchHold)
                 .on('hold', onCanvasTouchHold)
                 .on('release', onCanvasRelease);

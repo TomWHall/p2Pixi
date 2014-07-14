@@ -10,13 +10,14 @@
         function Game(options) {
 
             options = options || {};
+            options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];
+            this.options = options;
 
             this.world = new p2.World(options.worldOptions || {});
             this.pixiAdapter = new P2Pixi.PixiAdapter(options.pixiOptions || {});
 
             this.gameObjects = [];
             this.trackedBody = null;
-            this.trackedBodyOffset = [0.5, 0.5];
             this.paused = false;
 
             this.imagesLoaded = false;
@@ -148,21 +149,23 @@
                 , pixiAdapter
                 , renderer
                 , ppu
-                , stagePosition 
+                , containerPosition 
                 , trackedBodyPosition
-                , trackedBodyOffset;
+                , trackedBodyOffset
+                , devicePixelRatio;
 
             // Focus tracked body, if set
             if (trackedBody !== null) {
                 pixiAdapter = this.pixiAdapter;
                 renderer = pixiAdapter.renderer;
                 ppu = pixiAdapter.pixelsPerLengthUnit;
-                stagePosition = pixiAdapter.stage.position;
+                containerPosition = pixiAdapter.container.position;
                 trackedBodyPosition = trackedBody.position;
-                trackedBodyOffset = this.trackedBodyOffset;
+                trackedBodyOffset = this.options.trackedBodyOffset;
+                devicePixelRatio = this.pixiAdapter.settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
 
-                stagePosition.x = (renderer.width * trackedBodyOffset[0]) - (trackedBodyPosition[0] * ppu);
-                stagePosition.y = -(renderer.height * (1 - trackedBodyOffset[1])) + (trackedBodyPosition[1] * ppu);
+                containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * devicePixelRatio);
+                containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * devicePixelRatio);
             }
         }
 
@@ -171,15 +174,12 @@
          */
         Game.prototype.render = function () {
             var pixiAdapter = this.pixiAdapter
-                , w = pixiAdapter.renderer.width
-                , h = pixiAdapter.renderer.height
                 , ppu = pixiAdapter.pixelsPerLengthUnit
                 , gameObjects = this.gameObjects
                 , gameObjectCount = gameObjects.length
                 , gameObject
                 , gameObjectBodyCount
-                , i
-                , j
+                , i, j
                 , body
                 , displayObjectContainer;
 
@@ -193,12 +193,12 @@
                     displayObjectContainer = gameObject.displayObjectContainers[j];
 
                     displayObjectContainer.position.x = body.position[0] * ppu;
-                    displayObjectContainer.position.y = h - body.position[1] * ppu;
+                    displayObjectContainer.position.y = -body.position[1] * ppu;
                     displayObjectContainer.rotation = -body.angle;
                 }
             }
 
-            pixiAdapter.renderer.render(pixiAdapter.container);
+            pixiAdapter.renderer.render(pixiAdapter.stage);
         }
 
         /**

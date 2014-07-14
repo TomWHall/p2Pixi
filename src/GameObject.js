@@ -31,7 +31,7 @@
             this.game.world.addBody(body);
 
             this.displayObjectContainers.push(displayObjectContainer);
-            this.game.pixiAdapter.stage.addChild(displayObjectContainer);
+            this.game.pixiAdapter.container.addChild(displayObjectContainer);
 
             return this;
         };

@@ -14,76 +14,87 @@ var P2Pixi;
             , Particle = p2.Particle
             , Line = p2.Line
             , Heightfield = p2.Heightfield
-            , EventEmitter = p2.EventEmitter
-            , init_stagePosition = vec2.create()
-            , init_physicsPosition = vec2.create();
+            , EventEmitter = p2.EventEmitter;
 
         /**
          * Creates a new PixiAdapter instance
          */
         function PixiAdapter(options) {
 
-            var self = this
-                , key;
+            var key
+                , settings = {
+                    pixelsPerLengthUnit: 128
+                    , width: 1280
+                    , height: 720
+                    , transparent: false
+                    , antialias: true
+                    , useDeviceAspect: false
+                    , webGLEnabled: true
+                    , useDevicePixels: true
+                }
+                , devicePixelRatio;
 
             options = options || {};
-
-            var settings = {
-                pixelsPerLengthUnit: 128
-                , width: 1280 // Pixi screen resolution
-                , height: 720
-                , useDeviceAspect: true
-            };
 
             for (key in options) {
                 settings[key] = options[key];
             }
 
             if (settings.useDeviceAspect) {
-                settings.height = getWindowHeight() / getWindowWidth() * settings.width;
+                settings.height = (window.innerHeight / window.innerWidth) * settings.width;
             }
 
             this.settings = settings;
-            var ppu = this.pixelsPerLengthUnit = settings.pixelsPerLengthUnit;
+            this.pixelsPerLengthUnit = settings.pixelsPerLengthUnit;
 
             EventEmitter.call(this);
 
-            this.renderer = PIXI.autoDetectRenderer(this.settings.width, this.settings.height, this.settings.viewport, this.settings.transparent, true);
+            devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
 
-            this.stage = new PIXI.DisplayObjectContainer();
-            this.container = new PIXI.Stage(0xFFFFFF, true);
-            this.container.addChild(this.stage);
+            this.renderer = settings.webGLEnabled
+                ? PIXI.autoDetectRenderer(settings.width * devicePixelRatio, settings.height * devicePixelRatio, settings.viewport, settings.antialias, settings.transparent)
+                : new PIXI.CanvasRenderer(settings.width * devicePixelRatio, settings.height * devicePixelRatio, settings.viewport, settings.transparent);
 
-            this.renderer.view.style.position = 'absolute';
+            this.stage = new PIXI.Stage(0xFFFFFF);
+            this.container = new PIXI.DisplayObjectContainer();
+            this.stage.addChild(this.container);
+
+            this.setupView();
+        }
+
+        PixiAdapter.prototype = new EventEmitter();
+
+        PixiAdapter.prototype.setupView = function () {
+            var self = this
+                , renderer = this.renderer
+                , view = this.renderer.view
+                , container = this.container
+                , devicePixelRatio = this.settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+
+            view.style.position = 'absolute';
+
             document.body.appendChild(this.renderer.view);
 
-            // Center the stage at origin
-            this.stage.position.x = this.renderer.width / 2;
-            this.stage.position.y = -this.renderer.height / 2;
+            container.position.x = renderer.width / 2;
+            container.position.y = renderer.height / 2;
 
-            this.windowWidth = getWindowWidth();
-            this.windowHeight = getWindowHeight();
-            this.viewWidth = 0;
-            this.viewHeight = 0;
+            container.scale.x = devicePixelRatio;
+            container.scale.y = devicePixelRatio;
+
+            this.windowWidth = window.innerWidth;
+            this.windowHeight = window.innerHeight;
+
+            this.viewCssWidth = 0;
+            this.viewCssHeight = 0;
             this.resize(this.windowWidth, this.windowHeight);
 
             window.addEventListener('resize', resizeRenderer);
             window.addEventListener('orientationchange', resizeRenderer);
 
-            function getWindowWidth() {
-                return window.innerWidth || document.documentElement.clientWidth;
-            }
-
-            function getWindowHeight() {
-                return window.innerHeight || document.documentElement.clientHeight;
-            }
-
             function resizeRenderer() {
-                self.resize(getWindowWidth(), getWindowHeight());
+                self.resize(window.innerWidth, window.innerHeight);
             }
-        }
-
-        PixiAdapter.prototype = new EventEmitter();
+        };
 
         /**
          * Draws a circle onto a PIXI.Graphics object
@@ -288,7 +299,7 @@ var P2Pixi;
                 graphics.endFill();
             }
 
-            if (verts.length > 2) {
+            if (verts.length > 2 && lineWidth !== 0) {
                 graphics.moveTo(verts[verts.length - 1][0], verts[verts.length - 1][1]);
                 graphics.lineTo(verts[0][0], verts[0][1]);
             }
@@ -535,34 +546,35 @@ var P2Pixi;
          * @param  {Number} h
          */
         PixiAdapter.prototype.resize = function (w, h) {
-            this.windowWidth = w;
-            this.windowHeight = h;
-
             var renderer = this.renderer
                 , view = renderer.view
                 , ratio = w / h
                 , pixiRatio = renderer.width / renderer.height;
 
+            this.windowWidth = w;
+            this.windowHeight = h;
+
             if (ratio > pixiRatio) { // Screen is wider than the renderer
 
-                this.viewWidth = h * pixiRatio;
-                this.viewHeight = h;
+                this.viewCssWidth = h * pixiRatio;
+                this.viewCssHeight = h;
 
-                view.style.width = this.viewWidth + 'px';
-                view.style.height = this.viewHeight + 'px';
-                view.style.left = ((w - this.viewWidth) / 2) + 'px';
+                view.style.width = this.viewCssWidth + 'px';
+                view.style.height = this.viewCssHeight + 'px';
+
+                view.style.left = Math.round((w - this.viewCssWidth) / 2) + 'px';
                 view.style.top = null;
 
             } else { // Screen is narrower
 
-                this.viewWidth = w;
-                this.viewHeight = w / pixiRatio;
+                this.viewCssWidth = w;
+                this.viewCssHeight = Math.round(w / pixiRatio);
 
-                view.style.width = this.viewWidth + 'px';
-                view.style.height = this.viewHeight + 'px';
+                view.style.width = this.viewCssWidth + 'px';
+                view.style.height = this.viewCssHeight + 'px';
+
                 view.style.left = null;            
-                view.style.top = ((h - this.viewHeight) / 2) + 'px';
-
+                view.style.top = Math.round((h - this.viewCssHeight) / 2) + 'px';
             }
         };
 
