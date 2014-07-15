@@ -13,7 +13,7 @@
             P2Pixi.GameObject.call(this, game);
 
             function addMotorizedRevoluteConstraint(bodyA, offsetA, bodyB, offsetB) {
-                var revoluteConstraint = new p2.RevoluteConstraint(bodyA, offsetA, bodyB, offsetB);
+                var revoluteConstraint = new p2.RevoluteConstraint(bodyA, bodyB, { localPivotA: offsetA, localPivotB: offsetB });
                 revoluteConstraint.enableMotor();
                 revoluteConstraint.setMotorSpeed(0);
 
@@ -132,8 +132,8 @@
 
             // Connect suspension bars to chassis
 
-            game.world.addConstraint(new p2.RevoluteConstraint(chassis, [-0.5, -0.2], leftSuspensionBar, [0, 0]));
-            game.world.addConstraint(new p2.RevoluteConstraint(chassis, [0.5, -0.2], rightSuspensionBar, [0, 0]));
+            game.world.addConstraint(new p2.RevoluteConstraint(chassis, leftSuspensionBar, { localPivotA: [-0.5, -0.2], localPivotB: [0, 0] }));
+            game.world.addConstraint(new p2.RevoluteConstraint(chassis, rightSuspensionBar, { localPivotA: [0.5, -0.2], localPivotB: [0, 0] }));
 
 
             // Wheels
