@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.7.0 - 14-07-2014 
+ * p2Pixi v0.7.1 - 16-07-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -158,7 +158,7 @@ var P2Pixi;
                 , containerPosition 
                 , trackedBodyPosition
                 , trackedBodyOffset
-                , devicePixelRatio;
+                , deviceScale;
 
             // Focus tracked body, if set
             if (trackedBody !== null) {
@@ -168,10 +168,10 @@ var P2Pixi;
                 containerPosition = pixiAdapter.container.position;
                 trackedBodyPosition = trackedBody.position;
                 trackedBodyOffset = this.options.trackedBodyOffset;
-                devicePixelRatio = this.pixiAdapter.settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+                deviceScale = this.pixiAdapter.deviceScale;
 
-                containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * devicePixelRatio);
-                containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * devicePixelRatio);
+                containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
+                containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
             }
         }
 
@@ -362,8 +362,7 @@ var P2Pixi;
                     , useDeviceAspect: false
                     , webGLEnabled: true
                     , useDevicePixels: true
-                }
-                , devicePixelRatio;
+                };
 
             options = options || {};
 
@@ -380,11 +379,12 @@ var P2Pixi;
 
             EventEmitter.call(this);
 
-            devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+            this.devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+            this.deviceScale = (this.devicePixelRatio !== 1 ? (Math.round(Math.max(screen.width, screen.height) * this.devicePixelRatio) / Math.max(settings.width, settings.height)) : 1);
 
             this.renderer = settings.webGLEnabled
-                ? PIXI.autoDetectRenderer(settings.width * devicePixelRatio, settings.height * devicePixelRatio, settings.viewport, settings.antialias, settings.transparent)
-                : new PIXI.CanvasRenderer(settings.width * devicePixelRatio, settings.height * devicePixelRatio, settings.viewport, settings.transparent);
+                ? PIXI.autoDetectRenderer(settings.width * this.deviceScale, settings.height * this.deviceScale, settings.viewport, settings.antialias, settings.transparent)
+                : new PIXI.CanvasRenderer(settings.width * this.deviceScale, settings.height * this.deviceScale, settings.viewport, settings.transparent);
 
             this.stage = new PIXI.Stage(0xFFFFFF);
             this.container = new PIXI.DisplayObjectContainer();
@@ -400,7 +400,7 @@ var P2Pixi;
                 , renderer = this.renderer
                 , view = this.renderer.view
                 , container = this.container
-                , devicePixelRatio = this.settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+                , deviceScale = this.deviceScale;
 
             view.style.position = 'absolute';
 
@@ -409,8 +409,8 @@ var P2Pixi;
             container.position.x = renderer.width / 2;
             container.position.y = renderer.height / 2;
 
-            container.scale.x = devicePixelRatio;
-            container.scale.y = devicePixelRatio;
+            container.scale.x = deviceScale;
+            container.scale.y = deviceScale;
 
             this.windowWidth = window.innerWidth;
             this.windowHeight = window.innerHeight;

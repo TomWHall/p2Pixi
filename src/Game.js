@@ -152,7 +152,7 @@
                 , containerPosition 
                 , trackedBodyPosition
                 , trackedBodyOffset
-                , devicePixelRatio;
+                , deviceScale;
 
             // Focus tracked body, if set
             if (trackedBody !== null) {
@@ -162,10 +162,10 @@
                 containerPosition = pixiAdapter.container.position;
                 trackedBodyPosition = trackedBody.position;
                 trackedBodyOffset = this.options.trackedBodyOffset;
-                devicePixelRatio = this.pixiAdapter.settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+                deviceScale = this.pixiAdapter.deviceScale;
 
-                containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * devicePixelRatio);
-                containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * devicePixelRatio);
+                containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
+                containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
             }
         }
 

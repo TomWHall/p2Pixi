@@ -31,8 +31,7 @@ var P2Pixi;
                     , useDeviceAspect: false
                     , webGLEnabled: true
                     , useDevicePixels: true
-                }
-                , devicePixelRatio;
+                };
 
             options = options || {};
 
@@ -49,11 +48,12 @@ var P2Pixi;
 
             EventEmitter.call(this);
 
-            devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+            this.devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+            this.deviceScale = (this.devicePixelRatio !== 1 ? (Math.round(Math.max(screen.width, screen.height) * this.devicePixelRatio) / Math.max(settings.width, settings.height)) : 1);
 
             this.renderer = settings.webGLEnabled
-                ? PIXI.autoDetectRenderer(settings.width * devicePixelRatio, settings.height * devicePixelRatio, settings.viewport, settings.antialias, settings.transparent)
-                : new PIXI.CanvasRenderer(settings.width * devicePixelRatio, settings.height * devicePixelRatio, settings.viewport, settings.transparent);
+                ? PIXI.autoDetectRenderer(settings.width * this.deviceScale, settings.height * this.deviceScale, settings.viewport, settings.antialias, settings.transparent)
+                : new PIXI.CanvasRenderer(settings.width * this.deviceScale, settings.height * this.deviceScale, settings.viewport, settings.transparent);
 
             this.stage = new PIXI.Stage(0xFFFFFF);
             this.container = new PIXI.DisplayObjectContainer();
@@ -69,7 +69,7 @@ var P2Pixi;
                 , renderer = this.renderer
                 , view = this.renderer.view
                 , container = this.container
-                , devicePixelRatio = this.settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+                , deviceScale = this.deviceScale;
 
             view.style.position = 'absolute';
 
@@ -78,8 +78,8 @@ var P2Pixi;
             container.position.x = renderer.width / 2;
             container.position.y = renderer.height / 2;
 
-            container.scale.x = devicePixelRatio;
-            container.scale.y = devicePixelRatio;
+            container.scale.x = deviceScale;
+            container.scale.y = deviceScale;
 
             this.windowWidth = window.innerWidth;
             this.windowHeight = window.innerHeight;
