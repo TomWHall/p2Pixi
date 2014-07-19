@@ -62,7 +62,7 @@
                     doc = gameObject.displayObjectContainers[i];
 
                     this.world.removeBody(body);
-                    this.pixiAdapter.stage.removeChild(doc);
+                    this.pixiAdapter.container.removeChild(doc);
                 }
 
                 this.gameObjects.splice(index, 1);
@@ -162,7 +162,7 @@
                 containerPosition = pixiAdapter.container.position;
                 trackedBodyPosition = trackedBody.position;
                 trackedBodyOffset = this.options.trackedBodyOffset;
-                deviceScale = this.pixiAdapter.deviceScale;
+                deviceScale = pixiAdapter.deviceScale;
 
                 containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
                 containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
