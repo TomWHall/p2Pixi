@@ -74,7 +74,7 @@
                 , alpha);
 
             return this;
-        }
+        };
 
         /**
          * Adds the supplied p2 constraint to the game's world and to this GameObject's constraints collection

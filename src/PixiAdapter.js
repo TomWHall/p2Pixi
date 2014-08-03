@@ -428,7 +428,7 @@ var P2Pixi;
                 path.push([data.length * shape.elementWidth * ppu, 100 * ppu]);
                 this.drawPath(graphics, path, style);
             }
-        }
+        };
 
         /**
          * Adds the supplied shape to the supplied DisplayObjectContainer, using vectors and / or a texture
@@ -538,7 +538,7 @@ var P2Pixi;
 
                 displayObjectContainer.addChild(graphics);
             }
-        }
+        };
 
         /**
          * Resizes the Pixi renderer's view to fit proportionally in the supplied window dimensions

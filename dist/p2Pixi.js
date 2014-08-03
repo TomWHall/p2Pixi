@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.7.2 - 20-07-2014 
+ * p2Pixi v0.7.3 - 03-08-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -26,6 +26,8 @@ var P2Pixi;
             this.trackedBody = null;
             this.paused = false;
 
+            this.lastWorldStepTime = null;
+
             this.imagesLoaded = false;
 
             if (options.imageUrls) {
@@ -42,7 +44,7 @@ var P2Pixi;
          */
         Game.prototype.addGameObject = function(gameObject) {
             this.gameObjects.push(gameObject);
-        }
+        };
 
         /**
          * Removes the supplied GameObject
@@ -73,7 +75,7 @@ var P2Pixi;
 
                 this.gameObjects.splice(index, 1);
             }
-        }
+        };
 
         /**
          * Loads the supplied images asyncronously
@@ -125,15 +127,16 @@ var P2Pixi;
          */
         Game.prototype.run = function () {
             var self = this
-                , lastCallTime = self.time()
                 , maxSubSteps = 10;
+
+            self.lastWorldStepTime = self.time();
 
             function update() {
                 var timeSinceLastCall;
 
                 if (!self.paused) {
-                    timeSinceLastCall = self.time() - lastCallTime;
-                    lastCallTime = self.time();
+                    timeSinceLastCall = self.time() - self.lastWorldStepTime;
+                    self.lastWorldStepTime = self.time();
                     self.world.step(1 / 60, timeSinceLastCall, maxSubSteps);
 
                     self.beforeRender();
@@ -173,7 +176,7 @@ var P2Pixi;
                 containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
                 containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
             }
-        }
+        };
 
         /**
          * Updates the Pixi representation of the world
@@ -205,7 +208,7 @@ var P2Pixi;
             }
 
             pixiAdapter.renderer.render(pixiAdapter.stage);
-        }
+        };
 
         /**
          * Called after rendering
@@ -218,6 +221,17 @@ var P2Pixi;
         Game.prototype.clear = function () {
             while (this.gameObjects.length > 0) {
                 this.removeGameObject(this.gameObjects[0]);
+            }
+        };
+
+        /**
+         * Toggles pause state
+         */
+        Game.prototype.pauseToggle = function () {
+            this.paused = !this.paused;
+
+            if (!this.paused) {
+                this.lastWorldStepTime = this.time();
             }
         };
 
@@ -302,7 +316,7 @@ var P2Pixi;
                 , alpha);
 
             return this;
-        }
+        };
 
         /**
          * Adds the supplied p2 constraint to the game's world and to this GameObject's constraints collection
@@ -759,7 +773,7 @@ var P2Pixi;
                 path.push([data.length * shape.elementWidth * ppu, 100 * ppu]);
                 this.drawPath(graphics, path, style);
             }
-        }
+        };
 
         /**
          * Adds the supplied shape to the supplied DisplayObjectContainer, using vectors and / or a texture
@@ -869,7 +883,7 @@ var P2Pixi;
 
                 displayObjectContainer.addChild(graphics);
             }
-        }
+        };
 
         /**
          * Resizes the Pixi renderer's view to fit proportionally in the supplied window dimensions

@@ -20,6 +20,8 @@
             this.trackedBody = null;
             this.paused = false;
 
+            this.lastWorldStepTime = null;
+
             this.imagesLoaded = false;
 
             if (options.imageUrls) {
@@ -36,7 +38,7 @@
          */
         Game.prototype.addGameObject = function(gameObject) {
             this.gameObjects.push(gameObject);
-        }
+        };
 
         /**
          * Removes the supplied GameObject
@@ -67,7 +69,7 @@
 
                 this.gameObjects.splice(index, 1);
             }
-        }
+        };
 
         /**
          * Loads the supplied images asyncronously
@@ -119,15 +121,16 @@
          */
         Game.prototype.run = function () {
             var self = this
-                , lastCallTime = self.time()
                 , maxSubSteps = 10;
+
+            self.lastWorldStepTime = self.time();
 
             function update() {
                 var timeSinceLastCall;
 
                 if (!self.paused) {
-                    timeSinceLastCall = self.time() - lastCallTime;
-                    lastCallTime = self.time();
+                    timeSinceLastCall = self.time() - self.lastWorldStepTime;
+                    self.lastWorldStepTime = self.time();
                     self.world.step(1 / 60, timeSinceLastCall, maxSubSteps);
 
                     self.beforeRender();
@@ -167,7 +170,7 @@
                 containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
                 containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
             }
-        }
+        };
 
         /**
          * Updates the Pixi representation of the world
@@ -199,7 +202,7 @@
             }
 
             pixiAdapter.renderer.render(pixiAdapter.stage);
-        }
+        };
 
         /**
          * Called after rendering
@@ -212,6 +215,17 @@
         Game.prototype.clear = function () {
             while (this.gameObjects.length > 0) {
                 this.removeGameObject(this.gameObjects[0]);
+            }
+        };
+
+        /**
+         * Toggles pause state
+         */
+        Game.prototype.pauseToggle = function () {
+            this.paused = !this.paused;
+
+            if (!this.paused) {
+                this.lastWorldStepTime = this.time();
             }
         };
 
