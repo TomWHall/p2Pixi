@@ -49,10 +49,7 @@
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha) {
-            var displayObjectContainer
-                , displayObject
-                , graphics
-                , i;
+            var displayObjectContainer;
 
             offset = offset || [0, 0];
             angle = angle || 0;

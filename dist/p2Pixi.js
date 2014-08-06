@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.7.3 - 03-08-2014 
+ * p2Pixi v0.7.4 - 06-08-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -291,10 +291,7 @@ var P2Pixi;
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha) {
-            var displayObjectContainer
-                , displayObject
-                , graphics
-                , i;
+            var displayObjectContainer;
 
             offset = offset || [0, 0];
             angle = angle || 0;
@@ -393,22 +390,42 @@ var P2Pixi;
 
             EventEmitter.call(this);
 
-            this.devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
-            this.deviceScale = (this.devicePixelRatio !== 1 ? (Math.round(Math.max(screen.width, screen.height) * this.devicePixelRatio) / Math.max(settings.width, settings.height)) : 1);
-
-            this.renderer = settings.webGLEnabled
-                ? PIXI.autoDetectRenderer(settings.width * this.deviceScale, settings.height * this.deviceScale, settings.viewport, settings.antialias, settings.transparent)
-                : new PIXI.CanvasRenderer(settings.width * this.deviceScale, settings.height * this.deviceScale, settings.viewport, settings.transparent);
-
             this.stage = new PIXI.Stage(0xFFFFFF);
             this.container = new PIXI.DisplayObjectContainer();
             this.stage.addChild(this.container);
 
+            this.setDeviceProperties();
+            this.setupRenderer();
             this.setupView();
         }
 
         PixiAdapter.prototype = new EventEmitter();
 
+        /**
+         * Reads and stores device properties
+         */
+        PixiAdapter.prototype.setDeviceProperties = function () {
+            var settings = this.settings;
+
+            this.devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
+            this.deviceScale = (this.devicePixelRatio !== 1 ? (Math.round(Math.max(screen.width, screen.height) * this.devicePixelRatio) / Math.max(settings.width, settings.height)) : 1);
+        };
+
+        /**
+         * Sets up the Pixi renderer
+         */
+        PixiAdapter.prototype.setupRenderer = function () {
+            var settings = this.settings
+                , deviceScale = this.deviceScale;
+
+            this.renderer = settings.webGLEnabled
+                ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.antialias, settings.transparent)
+                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.transparent);
+        };
+
+        /**
+         * Sets up the Pixi view
+         */
         PixiAdapter.prototype.setupView = function () {
             var self = this
                 , renderer = this.renderer
@@ -420,14 +437,14 @@ var P2Pixi;
 
             document.body.appendChild(this.renderer.view);
 
+            this.windowWidth = window.innerWidth;
+            this.windowHeight = window.innerHeight;
+
             container.position.x = renderer.width / 2;
             container.position.y = renderer.height / 2;
 
             container.scale.x = deviceScale;
             container.scale.y = deviceScale;
-
-            this.windowWidth = window.innerWidth;
-            this.windowHeight = window.innerHeight;
 
             this.viewCssWidth = 0;
             this.viewCssHeight = 0;
