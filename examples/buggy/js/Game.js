@@ -11,13 +11,13 @@
 
             var options = {
                 worldOptions: {
-                    gravity: [0, -10]
+                    gravity: [0, -9.8]
                 }
                 , pixiOptions: {
                     viewport: document.getElementById('viewport')
                     , transparent: true
                 }
-                , imageUrls: [
+                , assetUrls: [
                     'img/rock.jpg'
                     , 'img/metal.jpg'
                     , 'img/glass.jpg'

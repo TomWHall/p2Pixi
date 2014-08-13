@@ -78,7 +78,7 @@ var P2Pixi;
 
             this.renderer = settings.webGLEnabled
                 ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.antialias, settings.transparent)
-                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.transparent);
+                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.transparent, settings.antialias);
         };
 
         /**

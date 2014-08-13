@@ -22,12 +22,12 @@
 
             this.lastWorldStepTime = null;
 
-            this.imagesLoaded = false;
+            this.assetsLoaded = false;
 
-            if (options.imageUrls) {
-                this.loadImages(options.imageUrls);
+            if (options.assetUrls) {
+                this.loadAssets(options.assetUrls);
             } else {
-                this.imagesLoaded = true;
+                this.assetsLoaded = true;
             }
 
             this.runIfAssetsLoaded();
@@ -72,26 +72,19 @@
         };
 
         /**
-         * Loads the supplied images asyncronously
+         * Loads the supplied assets asyncronously
          */
-        Game.prototype.loadImages = function (imageUrls) {
+        Game.prototype.loadAssets = function (assetUrls) {
             var self = this
-                , imagesCount = imageUrls.length
-                , imagesLoadedCount = 0
-                , i
-                , imageLoader;
+                , assetLoader;
 
-            for (i = 0; i < imagesCount; i++) {
-                imageLoader = new PIXI.ImageLoader(imageUrls[i], false);
-                imageLoader.addEventListener('loaded', function (e) {
-                    imagesLoadedCount++;
-                    if (imagesLoadedCount === imagesCount) {
-                        self.imagesLoaded = true;
-                        self.runIfAssetsLoaded();
-                    }
-                });
-                imageLoader.load();
-            }
+            assetLoader = new PIXI.AssetLoader(assetUrls);
+            assetLoader.onComplete = function(e) {
+                self.assetsLoaded = true;
+                self.runIfAssetsLoaded();
+            };
+
+            assetLoader.load();
         };
 
         /**
@@ -103,7 +96,7 @@
          * Checks if all assets are loaded and if so, runs the game
          */
         Game.prototype.runIfAssetsLoaded = function () {
-            if (this.imagesLoaded) {
+            if (this.assetsLoaded) {
                 this.beforeRun();
                 this.run();
             }
@@ -132,12 +125,12 @@
                     timeSinceLastCall = self.time() - self.lastWorldStepTime;
                     self.lastWorldStepTime = self.time();
                     self.world.step(1 / 60, timeSinceLastCall, maxSubSteps);
-
-                    self.beforeRender();
-                    self.render();
-                    self.afterRender();
                 }
 
+                self.beforeRender();
+                self.render();
+                self.afterRender();
+                
                 requestAnimationFrame(update);
             }
 
