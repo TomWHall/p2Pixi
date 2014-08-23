@@ -52,7 +52,7 @@
             this.tyreMaterial = new p2.Material();
 
             this.timeSinceLastStep = 0;
-            this.lastCallTime = this.time();
+            this.lastCallTime = this.game.time();
 
 
             // Chassis, dome and plate
@@ -206,7 +206,7 @@
             // Adjust speed based on acceleration
 
             this.game.world.on('postStep', function (e) {
-                var time = self.time()
+                var time = self.game.time()
                     , timeSinceLastCall = time - self.lastCallTime
                     , speed = self.getSpeed();
 

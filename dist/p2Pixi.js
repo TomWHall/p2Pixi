@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.7.5 - 13-08-2014 
+ * p2Pixi v0.7.6 - 24-08-2014 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -50,28 +50,10 @@ var P2Pixi;
          * Removes the supplied GameObject
          */
         Game.prototype.removeGameObject = function(gameObject) {     
-            var index = this.gameObjects.indexOf(gameObject)
-                , i
-                , body
-                , constraint
-                , doc;
+            var index = this.gameObjects.indexOf(gameObject);
 
             if (index !== -1) {
-                // Remove p2 constraints from the world
-                for (i = 0; i < gameObject.constraints.length; i++) {
-                    constraint = gameObject.constraints[i];
-
-                    this.world.removeConstraint(constraint);
-                }
-
-                // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
-                for (i = 0; i < gameObject.bodies.length; i++) {
-                    body = gameObject.bodies[i];
-                    doc = gameObject.displayObjectContainers[i];
-
-                    this.world.removeBody(body);
-                    this.pixiAdapter.container.removeChild(doc);
-                }
+                gameObject.clear();
 
                 this.gameObjects.splice(index, 1);
             }
@@ -281,9 +263,10 @@ var P2Pixi;
          * @param  {Object} style
          * @param  {Texture} texture
          * @param  {Number} alpha
+         * @param  {Object} textureOptions
          * @return {GameObject} gameObject
          */
-        GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha) {
+        GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha, textureOptions) {
             var displayObjectContainer;
 
             offset = offset || [0, 0];
@@ -303,7 +286,8 @@ var P2Pixi;
                 , angle
                 , style
                 , texture
-                , alpha);
+                , alpha
+                , textureOptions);
 
             return this;
         };
@@ -322,10 +306,24 @@ var P2Pixi;
         };
 
         /**
-         * Returns the current time in seconds
+         * Clears bodies, DisplayObjectContainers and constraints. Called when the GameObject is removed from the game
          */
-        GameObject.prototype.time = function () {
-            return new Date().getTime() / 1000;
+        GameObject.prototype.clear = function () {
+            var i
+                , game = this.game
+                , world = game.world
+                , container = game.pixiAdapter.container;
+
+            // Remove p2 constraints from the world
+            for (i = 0; i < this.constraints.length; i++) {
+                world.removeConstraint(this.constraints[i]);
+            }
+
+            // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
+            for (i = 0; i < this.bodies.length; i++) {
+                world.removeBody(this.bodies[i]);
+                container.removeChild(this.displayObjectContainers[i]);
+            }
         };
 
         return GameObject;
@@ -795,11 +793,11 @@ var P2Pixi;
          * @param  {Texture} texture
          * @param  {Number} alpha
          */
-        PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha) {
+        PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha, textureOptions) {
 
             var zero = [0, 0]
                 , graphics
-                , tilingSprite
+                , sprite
                 , doc
                 , ppu = this.pixelsPerLengthUnit
                 , aabb
@@ -809,7 +807,8 @@ var P2Pixi;
                 , top
                 , right
                 , bottom
-                , maskGraphics;
+                , maskGraphics
+                , textureOptions = textureOptions || {};
 
             // If a Pixi texture has been specified...
             if (texture) {
@@ -831,9 +830,14 @@ var P2Pixi;
                 width = right - left;
                 height = top - bottom;
 
-                // Create a TilingSprite to cover the entire shape
-                tilingSprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
-                tilingSprite.alpha = alpha || 1;
+                // Create a Sprite or TilingSprite to cover the entire shape
+                if (textureOptions.tile === false) {
+                    sprite = new PIXI.Sprite(texture);
+                } else {
+                    sprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
+                }
+
+                sprite.alpha = alpha || 1;
 
                 // If the shape is anything other than a rectangle, we need a mask for the texture.
                 // We use the shape itself to create a new Graphics object.
@@ -851,28 +855,28 @@ var P2Pixi;
                         , { lineWidth: 0, fillColor: 0xffffff });
 
                     displayObjectContainer.addChild(maskGraphics);
-                    tilingSprite.mask = maskGraphics;
+                    sprite.mask = maskGraphics;
                 }
 
                 // Sprite positions are the top-left corner of the Sprite, whereas Graphics objects
                 // are positioned at their origin
                 if (angle === 0) {
-                    tilingSprite.position.x = (left * ppu) + (offset[0] * ppu);
-                    tilingSprite.position.y = -(top * ppu) - (offset[1] * ppu);
-                    tilingSprite.rotation = -angle;
+                    sprite.position.x = (left * ppu) + (offset[0] * ppu);
+                    sprite.position.y = -(top * ppu) - (offset[1] * ppu);
+                    sprite.rotation = -angle;
 
-                    displayObjectContainer.addChild(tilingSprite);
+                    displayObjectContainer.addChild(sprite);
                 } else {
-                    tilingSprite.position.x = (left * ppu);
-                    tilingSprite.position.y = -(top * ppu);
+                    sprite.position.x = (left * ppu);
+                    sprite.position.y = -(top * ppu);
 
                     doc = new PIXI.DisplayObjectContainer();
-                    doc.addChild(tilingSprite);
+                    doc.addChild(sprite);
                     doc.position.x = (offset[0] * ppu);
                     doc.position.y = -(offset[1] * ppu);
                     doc.rotation = -angle;
 
-                    doc.addChild(tilingSprite);
+                    doc.addChild(sprite);
                     displayObjectContainer.addChild(doc);
                 }
             }

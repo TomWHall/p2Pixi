@@ -460,11 +460,11 @@ var P2Pixi;
          * @param  {Texture} texture
          * @param  {Number} alpha
          */
-        PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha) {
+        PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha, textureOptions) {
 
             var zero = [0, 0]
                 , graphics
-                , tilingSprite
+                , sprite
                 , doc
                 , ppu = this.pixelsPerLengthUnit
                 , aabb
@@ -474,7 +474,8 @@ var P2Pixi;
                 , top
                 , right
                 , bottom
-                , maskGraphics;
+                , maskGraphics
+                , textureOptions = textureOptions || {};
 
             // If a Pixi texture has been specified...
             if (texture) {
@@ -496,9 +497,14 @@ var P2Pixi;
                 width = right - left;
                 height = top - bottom;
 
-                // Create a TilingSprite to cover the entire shape
-                tilingSprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
-                tilingSprite.alpha = alpha || 1;
+                // Create a Sprite or TilingSprite to cover the entire shape
+                if (textureOptions.tile === false) {
+                    sprite = new PIXI.Sprite(texture);
+                } else {
+                    sprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
+                }
+
+                sprite.alpha = alpha || 1;
 
                 // If the shape is anything other than a rectangle, we need a mask for the texture.
                 // We use the shape itself to create a new Graphics object.
@@ -516,28 +522,28 @@ var P2Pixi;
                         , { lineWidth: 0, fillColor: 0xffffff });
 
                     displayObjectContainer.addChild(maskGraphics);
-                    tilingSprite.mask = maskGraphics;
+                    sprite.mask = maskGraphics;
                 }
 
                 // Sprite positions are the top-left corner of the Sprite, whereas Graphics objects
                 // are positioned at their origin
                 if (angle === 0) {
-                    tilingSprite.position.x = (left * ppu) + (offset[0] * ppu);
-                    tilingSprite.position.y = -(top * ppu) - (offset[1] * ppu);
-                    tilingSprite.rotation = -angle;
+                    sprite.position.x = (left * ppu) + (offset[0] * ppu);
+                    sprite.position.y = -(top * ppu) - (offset[1] * ppu);
+                    sprite.rotation = -angle;
 
-                    displayObjectContainer.addChild(tilingSprite);
+                    displayObjectContainer.addChild(sprite);
                 } else {
-                    tilingSprite.position.x = (left * ppu);
-                    tilingSprite.position.y = -(top * ppu);
+                    sprite.position.x = (left * ppu);
+                    sprite.position.y = -(top * ppu);
 
                     doc = new PIXI.DisplayObjectContainer();
-                    doc.addChild(tilingSprite);
+                    doc.addChild(sprite);
                     doc.position.x = (offset[0] * ppu);
                     doc.position.y = -(offset[1] * ppu);
                     doc.rotation = -angle;
 
-                    doc.addChild(tilingSprite);
+                    doc.addChild(sprite);
                     displayObjectContainer.addChild(doc);
                 }
             }

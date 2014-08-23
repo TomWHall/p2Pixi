@@ -46,9 +46,10 @@
          * @param  {Object} style
          * @param  {Texture} texture
          * @param  {Number} alpha
+         * @param  {Object} textureOptions
          * @return {GameObject} gameObject
          */
-        GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha) {
+        GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha, textureOptions) {
             var displayObjectContainer;
 
             offset = offset || [0, 0];
@@ -68,7 +69,8 @@
                 , angle
                 , style
                 , texture
-                , alpha);
+                , alpha
+                , textureOptions);
 
             return this;
         };
@@ -87,10 +89,24 @@
         };
 
         /**
-         * Returns the current time in seconds
+         * Clears bodies, DisplayObjectContainers and constraints. Called when the GameObject is removed from the game
          */
-        GameObject.prototype.time = function () {
-            return new Date().getTime() / 1000;
+        GameObject.prototype.clear = function () {
+            var i
+                , game = this.game
+                , world = game.world
+                , container = game.pixiAdapter.container;
+
+            // Remove p2 constraints from the world
+            for (i = 0; i < this.constraints.length; i++) {
+                world.removeConstraint(this.constraints[i]);
+            }
+
+            // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
+            for (i = 0; i < this.bodies.length; i++) {
+                world.removeBody(this.bodies[i]);
+                container.removeChild(this.displayObjectContainers[i]);
+            }
         };
 
         return GameObject;
