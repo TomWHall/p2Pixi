@@ -4,7 +4,11 @@ A simple 2D vector game model framework using p2.js for physics and Pixi.js for 
 
 Live demo:
 
-- http://booleanoperations.co.nz/experiments/p2/buggy/
+- http://booleanoperations.co.nz/experiments/p2/buggy
+
+Games using p2Pixi:
+
+- http://booleanoperations.co.nz/games/descensus
 
 
 Here is a brief overview of the 3 classes and their key methods:
@@ -18,11 +22,11 @@ Adds the supplied GameObject to the Game.
 ###removeGameObject
 Removes the supplied GameObject from the Game, which results in the removal of its bodies and constraints from the p2 physics world and the bodies' shapes from the Pixi rendering stage.
 
-###loadImages
-Loads the supplied images asyncronously with a Pixi ImageLoader, for use in textures.
+###loadAssets
+Loads the supplied assets asyncronously with a Pixi AssetLoader.
 
-###assetsLoaded
-Called when all images have been loaded.
+###runIfAssetsLoaded
+Called when all assets have been loaded. Override this method to perform custom loading checks, for example if you are also loading sounds.
 
 ###beforeRun
 Called before the game loop is started.
@@ -69,7 +73,7 @@ Adds the supplied p2 constraint to the GameObject and to the game's world.
 
 
 ##PixiAdapter
-Handles rendering of p2 shapes into Pixi objects such as Graphics (for vector rendering) and / or TilingSprite (for bitmap rendering).
+Handles rendering of p2 shapes into Pixi objects such as Graphics (for vector rendering) and / or Sprite / TilingSprite (for bitmap rendering).
 
 
 ###addShape
