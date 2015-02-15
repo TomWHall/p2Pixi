@@ -4,11 +4,11 @@ A simple 2D vector game model framework using p2.js for physics and Pixi.js for 
 
 Live demo:
 
-- http://booleanoperations.co.nz/experiments/p2/buggy
+- http://booleanoperations.com/experiments/p2/buggy
 
 Games using p2Pixi:
 
-- http://booleanoperations.co.nz/games/descensus
+- http://booleanoperations.com/games/descensus
 
 
 Here is a brief overview of the 3 classes and their key methods:
