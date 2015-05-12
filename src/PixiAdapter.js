@@ -48,8 +48,8 @@ var P2Pixi;
 
             EventEmitter.call(this);
 
-            this.stage = new PIXI.Stage(0xFFFFFF);
-            this.container = new PIXI.DisplayObjectContainer();
+            this.stage = new PIXI.Container();
+            this.container = new PIXI.Container();
             this.stage.addChild(this.container);
 
             this.setDeviceProperties();
@@ -77,8 +77,8 @@ var P2Pixi;
                 , deviceScale = this.deviceScale;
 
             this.renderer = settings.webGLEnabled
-                ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.antialias, settings.transparent)
-                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.transparent, settings.antialias);
+                ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings)
+                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings);
         };
 
         /**
@@ -451,8 +451,8 @@ var P2Pixi;
         };
 
         /**
-         * Adds the supplied shape to the supplied DisplayObjectContainer, using vectors and / or a texture
-         * @param  {DisplayObjectContainer} displayObjectContainer
+         * Adds the supplied shape to the supplied Container, using vectors and / or a texture
+         * @param  {Container} container
          * @param  {Shape} shape
          * @param  {Vector} offset
          * @param  {Number} angle
@@ -460,7 +460,7 @@ var P2Pixi;
          * @param  {Texture} texture
          * @param  {Number} alpha
          */
-        PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha, textureOptions) {
+        PixiAdapter.prototype.addShape = function (container, shape, offset, angle, style, texture, alpha, textureOptions) {
 
             var zero = [0, 0]
                 , graphics
@@ -501,7 +501,7 @@ var P2Pixi;
                 if (textureOptions.tile === false) {
                     sprite = new PIXI.Sprite(texture);
                 } else {
-                    sprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
+                    sprite = new PIXI.extras.TilingSprite(texture, width * ppu, height * ppu);
                 }
 
                 sprite.alpha = alpha || 1;
@@ -521,7 +521,7 @@ var P2Pixi;
                         , 0
                         , { lineWidth: 0, fillColor: 0xffffff });
 
-                    displayObjectContainer.addChild(maskGraphics);
+                    container.addChild(maskGraphics);
                     sprite.mask = maskGraphics;
                 }
 
@@ -532,19 +532,19 @@ var P2Pixi;
                     sprite.position.y = -(top * ppu) - (offset[1] * ppu);
                     sprite.rotation = -angle;
 
-                    displayObjectContainer.addChild(sprite);
+                    container.addChild(sprite);
                 } else {
                     sprite.position.x = (left * ppu);
                     sprite.position.y = -(top * ppu);
 
-                    doc = new PIXI.DisplayObjectContainer();
+                    doc = new PIXI.Container();
                     doc.addChild(sprite);
                     doc.position.x = (offset[0] * ppu);
                     doc.position.y = -(offset[1] * ppu);
                     doc.rotation = -angle;
 
                     doc.addChild(sprite);
-                    displayObjectContainer.addChild(doc);
+                    container.addChild(doc);
                 }
             }
 
@@ -562,7 +562,7 @@ var P2Pixi;
                     , 0
                     , style);
 
-                displayObjectContainer.addChild(graphics);
+                container.addChild(graphics);
             }
         };
 

@@ -14,7 +14,7 @@
                     gravity: [0, -9.8]
                 }
                 , pixiOptions: {
-                    viewport: document.getElementById('viewport')
+                    view: document.getElementById('viewport')
                     , transparent: true
                 }
                 , assetUrls: [
@@ -78,23 +78,24 @@
                 }
             });
 
-            function onCanvasTouchHold(e) {
-                var touch = e.gesture.touches[0];
+            function onViewportTouchHold(e) {
+                var touch = e.changedTouches ? e.changedTouches[0] : e;
 
-                if (touch.pageX <= pixiAdapter.windowWidth / 2)
+                if (touch.clientX <= pixiAdapter.windowWidth / 2)
                     buggy.accelerateLeft();
                 else
                     buggy.accelerateRight();
             }
 
-            function onCanvasRelease(e) {
+            function onViewportRelease(e) {
                 buggy.endAcceleration();
             }
 
-            Hammer(view)
-                .on('touch', onCanvasTouchHold)
-                .on('hold', onCanvasTouchHold)
-                .on('release', onCanvasRelease);
+            view.addEventListener('touchstart', onViewportTouchHold, false);
+            view.addEventListener('touchend', onViewportRelease, false);
+
+            view.addEventListener('mousedown', onViewportTouchHold, false);
+            view.addEventListener('mouseup', onViewportRelease, false);
         }
 
         return Game;

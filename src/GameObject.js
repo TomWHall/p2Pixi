@@ -13,25 +13,25 @@
 
             this.bodies = []; // p2 physics bodies
             this.constraints = []; // p2 constraints
-            this.displayObjectContainers = []; // Pixi DisplayObjectContainers, one for each body. Each contains a child array of Graphics and / or Sprites.
+            this.containers = []; // Pixi Containers, one for each body. Each contains a child array of Graphics and / or Sprites.
 
             game.addGameObject(this);
         }
 
         /**
-         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering.
+         * Adds the supplied p2 body to the game's world and creates a corresponding null Container object for rendering.
          * Also adds the body to this GameObject's bodies collection
          * @param  {Body} body
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addBody = function (body) {
-            var displayObjectContainer = new PIXI.DisplayObjectContainer();
+            var container = new PIXI.Container();
 
             this.bodies.push(body);
             this.game.world.addBody(body);
 
-            this.displayObjectContainers.push(displayObjectContainer);
-            this.game.pixiAdapter.container.addChild(displayObjectContainer);
+            this.containers.push(container);
+            this.game.pixiAdapter.container.addChild(container);
 
             return this;
         };
@@ -50,7 +50,7 @@
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha, textureOptions) {
-            var displayObjectContainer;
+            var container;
 
             offset = offset || [0, 0];
             angle = angle || 0;
@@ -61,9 +61,9 @@
 
             body.addShape(shape, offset, angle);
 
-            displayObjectContainer = this.displayObjectContainers[this.bodies.indexOf(body)];
+            container = this.containers[this.bodies.indexOf(body)];
 
-            this.game.pixiAdapter.addShape(displayObjectContainer
+            this.game.pixiAdapter.addShape(container
                 , shape
                 , offset
                 , angle
@@ -89,7 +89,7 @@
         };
 
         /**
-         * Clears bodies, DisplayObjectContainers and constraints. Called when the GameObject is removed from the game
+         * Clears bodies, Containers and constraints. Called when the GameObject is removed from the game
          */
         GameObject.prototype.clear = function () {
             var i
@@ -102,10 +102,10 @@
                 world.removeConstraint(this.constraints[i]);
             }
 
-            // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
+            // Remove p2 bodies from the world and Pixi Containers from the stage
             for (i = 0; i < this.bodies.length; i++) {
                 world.removeBody(this.bodies[i]);
-                container.removeChild(this.displayObjectContainers[i]);
+                container.removeChild(this.containers[i]);
             }
         };
 

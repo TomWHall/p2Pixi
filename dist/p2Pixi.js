@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.7.6 - 24-08-2014 
+ * p2Pixi v0.8 - 12-05-2015 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -64,15 +64,19 @@ var P2Pixi;
          */
         Game.prototype.loadAssets = function (assetUrls) {
             var self = this
-                , assetLoader;
+                , loader = PIXI.loader
+                , i;
 
-            assetLoader = new PIXI.AssetLoader(assetUrls);
-            assetLoader.onComplete = function(e) {
+            for (i = 0; i < assetUrls.length; i++) {
+                loader.add(assetUrls[i], assetUrls[i]);
+            }
+
+            loader.once('complete', function() {
                 self.assetsLoaded = true;
                 self.runIfAssetsLoaded();
-            };
+            });
 
-            assetLoader.load();
+            loader.load();
         };
 
         /**
@@ -165,20 +169,20 @@ var P2Pixi;
                 , gameObjectBodyCount
                 , i, j
                 , body
-                , displayObjectContainer;
+                , container;
 
             for (i = 0; i < gameObjectCount; i++) {
                 gameObject = gameObjects[i];
                 gameObjectBodyCount = gameObject.bodies.length;
 
-                // Update DisplayObjectContainer transforms
+                // Update Container transforms
                 for (j = 0; j < gameObjectBodyCount; j++) {
                     body = gameObject.bodies[j];
-                    displayObjectContainer = gameObject.displayObjectContainers[j];
+                    container = gameObject.containers[j];
 
-                    displayObjectContainer.position.x = body.position[0] * ppu;
-                    displayObjectContainer.position.y = -body.position[1] * ppu;
-                    displayObjectContainer.rotation = -body.angle;
+                    container.position.x = body.position[0] * ppu;
+                    container.position.y = -body.position[1] * ppu;
+                    container.rotation = -body.angle;
                 }
             }
 
@@ -230,25 +234,25 @@ var P2Pixi;
 
             this.bodies = []; // p2 physics bodies
             this.constraints = []; // p2 constraints
-            this.displayObjectContainers = []; // Pixi DisplayObjectContainers, one for each body. Each contains a child array of Graphics and / or Sprites.
+            this.containers = []; // Pixi Containers, one for each body. Each contains a child array of Graphics and / or Sprites.
 
             game.addGameObject(this);
         }
 
         /**
-         * Adds the supplied p2 body to the game's world and creates a corresponding null DisplayObjectContainer object for rendering.
+         * Adds the supplied p2 body to the game's world and creates a corresponding null Container object for rendering.
          * Also adds the body to this GameObject's bodies collection
          * @param  {Body} body
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addBody = function (body) {
-            var displayObjectContainer = new PIXI.DisplayObjectContainer();
+            var container = new PIXI.Container();
 
             this.bodies.push(body);
             this.game.world.addBody(body);
 
-            this.displayObjectContainers.push(displayObjectContainer);
-            this.game.pixiAdapter.container.addChild(displayObjectContainer);
+            this.containers.push(container);
+            this.game.pixiAdapter.container.addChild(container);
 
             return this;
         };
@@ -267,7 +271,7 @@ var P2Pixi;
          * @return {GameObject} gameObject
          */
         GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha, textureOptions) {
-            var displayObjectContainer;
+            var container;
 
             offset = offset || [0, 0];
             angle = angle || 0;
@@ -278,9 +282,9 @@ var P2Pixi;
 
             body.addShape(shape, offset, angle);
 
-            displayObjectContainer = this.displayObjectContainers[this.bodies.indexOf(body)];
+            container = this.containers[this.bodies.indexOf(body)];
 
-            this.game.pixiAdapter.addShape(displayObjectContainer
+            this.game.pixiAdapter.addShape(container
                 , shape
                 , offset
                 , angle
@@ -306,7 +310,7 @@ var P2Pixi;
         };
 
         /**
-         * Clears bodies, DisplayObjectContainers and constraints. Called when the GameObject is removed from the game
+         * Clears bodies, Containers and constraints. Called when the GameObject is removed from the game
          */
         GameObject.prototype.clear = function () {
             var i
@@ -319,10 +323,10 @@ var P2Pixi;
                 world.removeConstraint(this.constraints[i]);
             }
 
-            // Remove p2 bodies from the world and Pixi DisplayObjectContainers from the stage
+            // Remove p2 bodies from the world and Pixi Containers from the stage
             for (i = 0; i < this.bodies.length; i++) {
                 world.removeBody(this.bodies[i]);
-                container.removeChild(this.displayObjectContainers[i]);
+                container.removeChild(this.containers[i]);
             }
         };
 
@@ -381,8 +385,8 @@ var P2Pixi;
 
             EventEmitter.call(this);
 
-            this.stage = new PIXI.Stage(0xFFFFFF);
-            this.container = new PIXI.DisplayObjectContainer();
+            this.stage = new PIXI.Container();
+            this.container = new PIXI.Container();
             this.stage.addChild(this.container);
 
             this.setDeviceProperties();
@@ -410,8 +414,8 @@ var P2Pixi;
                 , deviceScale = this.deviceScale;
 
             this.renderer = settings.webGLEnabled
-                ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.antialias, settings.transparent)
-                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings.viewport, settings.transparent, settings.antialias);
+                ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings)
+                : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings);
         };
 
         /**
@@ -784,8 +788,8 @@ var P2Pixi;
         };
 
         /**
-         * Adds the supplied shape to the supplied DisplayObjectContainer, using vectors and / or a texture
-         * @param  {DisplayObjectContainer} displayObjectContainer
+         * Adds the supplied shape to the supplied Container, using vectors and / or a texture
+         * @param  {Container} container
          * @param  {Shape} shape
          * @param  {Vector} offset
          * @param  {Number} angle
@@ -793,7 +797,7 @@ var P2Pixi;
          * @param  {Texture} texture
          * @param  {Number} alpha
          */
-        PixiAdapter.prototype.addShape = function (displayObjectContainer, shape, offset, angle, style, texture, alpha, textureOptions) {
+        PixiAdapter.prototype.addShape = function (container, shape, offset, angle, style, texture, alpha, textureOptions) {
 
             var zero = [0, 0]
                 , graphics
@@ -834,7 +838,7 @@ var P2Pixi;
                 if (textureOptions.tile === false) {
                     sprite = new PIXI.Sprite(texture);
                 } else {
-                    sprite = new PIXI.TilingSprite(texture, width * ppu, height * ppu);
+                    sprite = new PIXI.extras.TilingSprite(texture, width * ppu, height * ppu);
                 }
 
                 sprite.alpha = alpha || 1;
@@ -854,7 +858,7 @@ var P2Pixi;
                         , 0
                         , { lineWidth: 0, fillColor: 0xffffff });
 
-                    displayObjectContainer.addChild(maskGraphics);
+                    container.addChild(maskGraphics);
                     sprite.mask = maskGraphics;
                 }
 
@@ -865,19 +869,19 @@ var P2Pixi;
                     sprite.position.y = -(top * ppu) - (offset[1] * ppu);
                     sprite.rotation = -angle;
 
-                    displayObjectContainer.addChild(sprite);
+                    container.addChild(sprite);
                 } else {
                     sprite.position.x = (left * ppu);
                     sprite.position.y = -(top * ppu);
 
-                    doc = new PIXI.DisplayObjectContainer();
+                    doc = new PIXI.Container();
                     doc.addChild(sprite);
                     doc.position.x = (offset[0] * ppu);
                     doc.position.y = -(offset[1] * ppu);
                     doc.rotation = -angle;
 
                     doc.addChild(sprite);
-                    displayObjectContainer.addChild(doc);
+                    container.addChild(doc);
                 }
             }
 
@@ -895,7 +899,7 @@ var P2Pixi;
                     , 0
                     , style);
 
-                displayObjectContainer.addChild(graphics);
+                container.addChild(graphics);
             }
         };
 

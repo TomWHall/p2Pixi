@@ -58,15 +58,19 @@
          */
         Game.prototype.loadAssets = function (assetUrls) {
             var self = this
-                , assetLoader;
+                , loader = PIXI.loader
+                , i;
 
-            assetLoader = new PIXI.AssetLoader(assetUrls);
-            assetLoader.onComplete = function(e) {
+            for (i = 0; i < assetUrls.length; i++) {
+                loader.add(assetUrls[i], assetUrls[i]);
+            }
+
+            loader.once('complete', function() {
                 self.assetsLoaded = true;
                 self.runIfAssetsLoaded();
-            };
+            });
 
-            assetLoader.load();
+            loader.load();
         };
 
         /**
@@ -159,20 +163,20 @@
                 , gameObjectBodyCount
                 , i, j
                 , body
-                , displayObjectContainer;
+                , container;
 
             for (i = 0; i < gameObjectCount; i++) {
                 gameObject = gameObjects[i];
                 gameObjectBodyCount = gameObject.bodies.length;
 
-                // Update DisplayObjectContainer transforms
+                // Update Container transforms
                 for (j = 0; j < gameObjectBodyCount; j++) {
                     body = gameObject.bodies[j];
-                    displayObjectContainer = gameObject.displayObjectContainers[j];
+                    container = gameObject.containers[j];
 
-                    displayObjectContainer.position.x = body.position[0] * ppu;
-                    displayObjectContainer.position.y = -body.position[1] * ppu;
-                    displayObjectContainer.rotation = -body.angle;
+                    container.position.x = body.position[0] * ppu;
+                    container.position.y = -body.position[1] * ppu;
+                    container.rotation = -body.angle;
                 }
             }
 

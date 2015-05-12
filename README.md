@@ -2,9 +2,10 @@
 
 A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering.
 
-Live demo:
+Live demos:
 
 - http://booleanoperations.com/experiments/p2/buggy
+- http://booleanoperations.com/experiments/p2/unicycle
 
 Games using p2Pixi:
 
