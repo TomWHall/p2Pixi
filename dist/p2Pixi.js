@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.8 - 12-05-2015 
+ * p2Pixi v0.81 - 11-11-2015 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -347,7 +347,7 @@ var P2Pixi;
             , Capsule = p2.Capsule
             , Convex = p2.Convex
             , Plane = p2.Plane
-            , Rectangle = p2.Rectangle
+            , Box = p2.Box
             , Particle = p2.Particle
             , Line = p2.Line
             , Heightfield = p2.Heightfield
@@ -568,7 +568,7 @@ var P2Pixi;
             }
 
 
-            // Draw rectangle
+            // Draw box
 
             graphics.lineStyle(lineWidth, lineColor, 0);
 
@@ -596,7 +596,7 @@ var P2Pixi;
         };
 
         /**
-         * Draws a rectangle onto a PIXI.Graphics object
+         * Draws a box onto a PIXI.Graphics object
          * @param  {Graphics} graphics
          * @param  {Number} x
          * @param  {Number} y
@@ -735,7 +735,7 @@ var P2Pixi;
                 , verts
                 , vrot
                 , path
-                , data
+                , heights
                 , i
                 , v;
 
@@ -755,7 +755,7 @@ var P2Pixi;
             } else if (shape instanceof Line) {
                 this.drawLine(graphics, shape.length * ppu, style);
 
-            } else if (shape instanceof Rectangle) {
+            } else if (shape instanceof Box) {
                 this.drawRectangle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.width * ppu, shape.height * ppu, style);
 
             } else if (shape instanceof Capsule) {
@@ -775,14 +775,14 @@ var P2Pixi;
                 this.drawConvex(graphics, verts, style);
             } else if(shape instanceof Heightfield){
                 path = [[0, 100 * ppu]];
-                data = shape.data;
+                heights = shape.heights;
 
-                for (i = 0; i < data.length; i++){
-                    v = data[i];
+                for (i = 0; i < heights.length; i++){
+                    v = heights[i];
                     path.push([i * shape.elementWidth * ppu, -v * ppu]);
                 }
 
-                path.push([data.length * shape.elementWidth * ppu, 100 * ppu]);
+                path.push([heights.length * shape.elementWidth * ppu, 100 * ppu]);
                 this.drawPath(graphics, path, style);
             }
         };
@@ -826,8 +826,8 @@ var P2Pixi;
                 right = aabb.upperBound[0];
                 top = aabb.upperBound[1];
 
-                // Cater for Heightfield shapes, which have a lower bound of negative infinity
-                if (bottom === Number.NEGATIVE_INFINITY) {
+                // Cater for Heightfield shapes
+                if (shape instanceof Heightfield) {
                     bottom = -(this.settings.height / ppu);
                 }
 
@@ -843,9 +843,9 @@ var P2Pixi;
 
                 sprite.alpha = alpha || 1;
 
-                // If the shape is anything other than a rectangle, we need a mask for the texture.
+                // If the shape is anything other than a box, we need a mask for the texture.
                 // We use the shape itself to create a new Graphics object.
-                if (!(shape instanceof Rectangle)) {
+                if (!(shape instanceof Box)) {
                     maskGraphics = new PIXI.Graphics();
                     maskGraphics.renderable = false;
                     maskGraphics.position.x = (offset[0] * ppu);

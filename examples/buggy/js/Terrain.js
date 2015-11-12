@@ -16,7 +16,7 @@
                     collisionGroup: 1
                     , collisionMask: 1 | 2
                 }
-                , data = []
+                , heights = []
                 , i
                 , rockTexture = PIXI.Texture.fromImage('img/rock.jpg', false);
 
@@ -32,11 +32,9 @@
             });
 
             for (i = 0; i < 500; i++){
-                data.push(0.2 * Math.cos(0.2 * i) * Math.sin(0.5 * i) + 0.2 * Math.sin(0.1 * i) * Math.sin(0.05 * i));
+                heights.push(0.2 * Math.cos(0.2 * i) * Math.sin(0.5 * i) + 0.2 * Math.sin(0.1 * i) * Math.sin(0.05 * i));
             }
-            heightfield = new p2.Heightfield(data, {
-                elementWidth: 0.3
-            });
+            heightfield = new p2.Heightfield({ heights: heights, elementWidth: 0.3 });
             heightfield.material = this.rockMaterial;
 
             this.addBody(ground)

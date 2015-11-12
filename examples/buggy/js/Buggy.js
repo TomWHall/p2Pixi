@@ -64,7 +64,7 @@
 
             this.addBody(chassis)
                 .addShape(chassis
-                    , new p2.Circle(0.3)
+                    , new p2.Circle({ radius: 0.3 })
                     , [0, 0.2]
                     , 0
                     , buggyBodyShapeOptions
@@ -72,7 +72,7 @@
                     , glassTexture
                     , 0.9)
                 .addShape(chassis
-                    , new p2.Convex([[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]])
+                    , new p2.Convex({ vertices: [[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]] })
                     , [0, 0]
                     , 0
                     , buggyBodyShapeOptions
@@ -82,7 +82,7 @@
                     }
                     , metalTexture)
                 .addShape(chassis
-                    , new p2.Rectangle(1.5, 0.03)
+                    , new p2.Box({ width: 1.5, height:  0.03 })
                     , [0, 0.2]
                     , 0
                     , buggyBodyShapeOptions
@@ -101,7 +101,7 @@
 
             this.addBody(leftSuspensionBar)
                 .addShape(leftSuspensionBar
-                    , new p2.Rectangle(0.5, 0.07)
+                    , new p2.Box({ width: 0.5, height: 0.07 })
                     , [0, 0]
                     , 0
                     , buggyBodyShapeOptions
@@ -120,7 +120,7 @@
 
             this.addBody(rightSuspensionBar)
                 .addShape(rightSuspensionBar
-                    , new p2.Rectangle(0.5, 0.07)
+                    , new p2.Box({ width: 0.5, height: 0.07 })
                     , [0, 0]
                     , 0
                     , buggyBodyShapeOptions
@@ -163,7 +163,7 @@
             for (i = 0; i < wheels.length; i++) {
                 wheel = wheels[i];
 
-                tyre = new p2.Circle(0.23);
+                tyre = new p2.Circle({ radius: 0.23 });
                 tyre.material = this.tyreMaterial;
 
                 this.addBody(wheel)
@@ -175,7 +175,7 @@
                         , null
                         , tyreTexture)
                     .addShape(wheel // Hub
-                        , new p2.Circle(0.1)
+                        , new p2.Circle({ radius: 0.1 })
                         , [0, 0]
                         , 0
                         , buggyBodyShapeOptions
@@ -184,7 +184,7 @@
                         }
                         , null)
                     .addShape(wheel // Hub detail
-                        , new p2.Rectangle(0.12, 0.025)
+                        , new p2.Box({ width: 0.12, height: 0.025 })
                         , [0, 0]
                         , 0
                         , buggyBodyShapeOptions
