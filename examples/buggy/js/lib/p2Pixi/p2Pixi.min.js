@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.81 - 11-11-2015 
+ * p2Pixi v0.8.1 - 13-11-2015 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
