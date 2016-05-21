@@ -1,208 +1,178 @@
 ﻿module.exports = (function () {
 
-    /**
-     * Creates a new Game instance
-     */
-    function Game(options) {
+  /**
+   * Creates a new Game instance
+   */
+  function Game(options) {
 
-        options = options || {};
-        options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];
-        this.options = options;
+    options = options || {};
+    options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];
+    this.options = options;
 
-        this.world = new p2.World(options.worldOptions || {});
-        this.pixiAdapter = new P2Pixi.PixiAdapter(options.pixiOptions || {});
+    this.world = new p2.World(options.worldOptions || {});
+    this.pixiAdapter = new P2Pixi.PixiAdapter(options.pixiOptions || {});
 
-        this.gameObjects = [];
-        this.trackedBody = null;
-        this.paused = false;
+    this.gameObjects = [];
+    this.trackedBody = null;
+    this.paused = false;
 
-        this.lastWorldStepTime = null;
+    this.lastWorldStepTime = null;
 
-        this.assetsLoaded = false;
+    this.assetsLoaded = false;
 
-        if (options.assetUrls) {
-            this.loadAssets(options.assetUrls);
-        } else {
-            this.assetsLoaded = true;
-        }
+    if (options.assetUrls) {
+      this.loadAssets(options.assetUrls);
+    } else {
+      this.runIfReady();
+    }
+  }
 
-        this.runIfAssetsLoaded();
+  /**
+   * Loads the supplied assets asyncronously using PIXI.loader
+   */
+  Game.prototype.loadAssets = function (assetUrls) {
+    var loader = PIXI.loader;
+
+    for (var i = 0; i < assetUrls.length; i++) {
+      loader.add(assetUrls[i], assetUrls[i]);
     }
 
-    /**
-     * Adds the supplied GameObject
-     */
-    Game.prototype.addGameObject = function(gameObject) {
-        this.gameObjects.push(gameObject);
-    };
+    var self = this;
+    loader.once('complete', function () {
+      self.assetsLoaded = true;
+      self.runIfReady();
+    });
 
-    /**
-     * Removes the supplied GameObject
-     */
-    Game.prototype.removeGameObject = function(gameObject) {     
-        var index = this.gameObjects.indexOf(gameObject);
+    loader.load();
+  };
 
-        if (index !== -1) {
-            gameObject.clear();
+  /**
+   * Returns true if all async setup functions are complete and the Game is ready to start.
+   * Override this to implement multiple setup functions 
+   */
+  Game.prototype.isReadyToRun = function () {
+    return this.assetsLoaded;
+  };
 
-            this.gameObjects.splice(index, 1);
-        }
-    };
+  /**
+   * Checks if all assets are loaded and if so, runs the game
+   */
+  Game.prototype.runIfReady = function () {
+    if (this.isReadyToRun()) {
+      this.beforeRun();
+      this.run();
+    }
+  };
 
-    /**
-     * Loads the supplied assets asyncronously
-     */
-    Game.prototype.loadAssets = function (assetUrls) {
-        var self = this
-            , loader = PIXI.loader
-            , i;
+  /**
+   * Returns the current time in seconds
+   */
+  Game.prototype.time = function () {
+    return new Date().getTime() / 1000;
+  };
 
-        for (i = 0; i < assetUrls.length; i++) {
-            loader.add(assetUrls[i], assetUrls[i]);
-        }
+  /**
+   * Called before the game loop is started 
+   */
+  Game.prototype.beforeRun = function () { };
 
-        loader.once('complete', function() {
-            self.assetsLoaded = true;
-            self.runIfAssetsLoaded();
-        });
+  /**
+   * Begins the world step / render loop
+   */
+  Game.prototype.run = function () {
+    this.lastWorldStepTime = this.time();
 
-        loader.load();
-    };
-
-    /**
-     * Called before the game loop is started 
-     */
-    Game.prototype.beforeRun = function () { };
-
-    /**
-     * Checks if all assets are loaded and if so, runs the game
-     */
-    Game.prototype.runIfAssetsLoaded = function () {
-        if (this.assetsLoaded) {
-            this.beforeRun();
-            this.run();
-        }
-    };
-
-    /**
-     * Returns the current time in seconds
-     */
-    Game.prototype.time = function () {
-        return new Date().getTime() / 1000;
-    };
-
-    /**
-     * Begins the world step / render loop
-     */
-    Game.prototype.run = function () {
-        var self = this
-            , maxSubSteps = 10;
-
+    var self = this;
+    function update() {
+      if (!self.paused) {
+        var timeSinceLastCall = self.time() - self.lastWorldStepTime;
         self.lastWorldStepTime = self.time();
+        self.world.step(1 / 60, timeSinceLastCall, 10);
+      }
 
-        function update() {
-            var timeSinceLastCall;
+      self.beforeRender();
+      self.render();
+      self.afterRender();
 
-            if (!self.paused) {
-                timeSinceLastCall = self.time() - self.lastWorldStepTime;
-                self.lastWorldStepTime = self.time();
-                self.world.step(1 / 60, timeSinceLastCall, maxSubSteps);
-            }
+      requestAnimationFrame(update);
+    }
 
-            self.beforeRender();
-            self.render();
-            self.afterRender();
-            
-            requestAnimationFrame(update);
-        }
+    requestAnimationFrame(update);
+  };
 
-        requestAnimationFrame(update);
-    };
+  /**
+   * Called before rendering
+   */
+  Game.prototype.beforeRender = function () {
+    var trackedBody = this.trackedBody;
 
-    /**
-     * Called before rendering
-     */
-    Game.prototype.beforeRender = function () {
-        var trackedBody = this.trackedBody
-            , pixiAdapter
-            , renderer
-            , ppu
-            , containerPosition 
-            , trackedBodyPosition
-            , trackedBodyOffset
-            , deviceScale;
+    // Focus on tracked body, if set
+    if (trackedBody !== null) {
+      var pixiAdapter = this.pixiAdapter;
+      var renderer = pixiAdapter.renderer;
+      var ppu = pixiAdapter.pixelsPerLengthUnit;
+      var containerPosition = pixiAdapter.container.position;
+      var trackedBodyPosition = trackedBody.position;
+      var trackedBodyOffset = this.options.trackedBodyOffset;
+      var deviceScale = pixiAdapter.deviceScale;
 
-        // Focus tracked body, if set
-        if (trackedBody !== null) {
-            pixiAdapter = this.pixiAdapter;
-            renderer = pixiAdapter.renderer;
-            ppu = pixiAdapter.pixelsPerLengthUnit;
-            containerPosition = pixiAdapter.container.position;
-            trackedBodyPosition = trackedBody.position;
-            trackedBodyOffset = this.options.trackedBodyOffset;
-            deviceScale = pixiAdapter.deviceScale;
+      containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
+      containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
+    }
+  };
 
-            containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
-            containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
-        }
-    };
+  /**
+   * Updates the Pixi representation of the world
+   */
+  Game.prototype.render = function () {
+    var gameObjects = this.gameObjects;
+    var pixiAdapter = this.pixiAdapter;
 
-    /**
-     * Updates the Pixi representation of the world
-     */
-    Game.prototype.render = function () {
-        var pixiAdapter = this.pixiAdapter
-            , ppu = pixiAdapter.pixelsPerLengthUnit
-            , gameObjects = this.gameObjects
-            , gameObjectCount = gameObjects.length
-            , gameObject
-            , gameObjectBodyCount
-            , i, j
-            , body
-            , container;
+    for (var i = 0; i < gameObjects.length; i++) {
+      gameObjects[i].render();
+    }
 
-        for (i = 0; i < gameObjectCount; i++) {
-            gameObject = gameObjects[i];
-            gameObjectBodyCount = gameObject.bodies.length;
+    pixiAdapter.renderer.render(pixiAdapter.stage);
+  };
 
-            // Update Container transforms
-            for (j = 0; j < gameObjectBodyCount; j++) {
-                body = gameObject.bodies[j];
-                container = gameObject.containers[j];
+  /**
+   * Called after rendering
+   */
+  Game.prototype.afterRender = function () { };
 
-                container.position.x = body.position[0] * ppu;
-                container.position.y = -body.position[1] * ppu;
-                container.rotation = -body.angle;
-            }
-        }
+  /**
+   * Adds the supplied GameObject
+   */
+  Game.prototype.addGameObject = function (gameObject) {
+    this.gameObjects.push(gameObject);
+  };
 
-        pixiAdapter.renderer.render(pixiAdapter.stage);
-    };
+  /**
+   * Removes the supplied GameObject
+   */
+  Game.prototype.removeGameObject = function (gameObject) {
+    gameObject.remove();
+  };
 
-    /**
-     * Called after rendering
-     */
-    Game.prototype.afterRender = function () { };
+  /**
+   * Removes all GameObjects
+   */
+  Game.prototype.clear = function () {
+    while (this.gameObjects.length > 0) {
+      this.removeGameObject(this.gameObjects[0]);
+    }
+  };
 
-    /**
-     * Removes all GameObjects
-     */
-    Game.prototype.clear = function () {
-        while (this.gameObjects.length > 0) {
-            this.removeGameObject(this.gameObjects[0]);
-        }
-    };
+  /**
+   * Toggles pause state
+   */
+  Game.prototype.pauseToggle = function () {
+    this.paused = !this.paused;
 
-    /**
-     * Toggles pause state
-     */
-    Game.prototype.pauseToggle = function () {
-        this.paused = !this.paused;
+    if (!this.paused) {
+      this.lastWorldStepTime = this.time();
+    }
+  };
 
-        if (!this.paused) {
-            this.lastWorldStepTime = this.time();
-        }
-    };
-
-    return Game;
+  return Game;
 })();

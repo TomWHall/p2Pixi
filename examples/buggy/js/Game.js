@@ -32,9 +32,12 @@
 
         Game.prototype.beforeRun = function () {
             this.buggy = new BuggyDemo.Buggy(this);
+            this.addGameObject(this.buggy);
+            
             this.trackedBody = this.buggy.primaryBody;
 
             this.terrain = new BuggyDemo.Terrain(this);
+            this.addGameObject(this.terrain);
 
             // Add friction between buggy tyres and terrain
             this.world.addContactMaterial(new p2.ContactMaterial(this.buggy.tyreMaterial, this.terrain.rockMaterial, {
