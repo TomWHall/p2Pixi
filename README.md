@@ -26,8 +26,8 @@ Defers to the remove function of the supplied GameObject
 ###loadAssets
 Loads the supplied assets asyncronously with a Pixi AssetLoader.
 
-###runIfAssetsLoaded
-Called when all assets have been loaded. Override this method to perform custom loading checks, for example if you are also loading sounds.
+###runIfReady
+Runs the Game if the isReadyToRun function returns true. Override isReadyToRun to perform custom loading checks, for example if you are also loading sounds.
 
 ###beforeRun
 Called before the game loop is started.
