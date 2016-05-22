@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.8.6 - 21-05-2016 
+ * p2Pixi v0.8.6 - 22-05-2016 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -22,7 +22,13 @@ module.exports = (function () {
 
     this.gameObjects = [];
     this.trackedBody = null;
+    
     this.paused = false;
+    this.windowFocused = true;
+    
+    var self = this;
+    window.addEventListener("blur", function(e) { self.windowBlur(e); })
+    window.addEventListener("focus", function(e) { self.windowFocus(e); })
 
     this.lastWorldStepTime = null;
 
@@ -92,7 +98,7 @@ module.exports = (function () {
 
     var self = this;
     function update() {
-      if (!self.paused) {
+      if (self.windowFocused && !self.paused) {
         var timeSinceLastCall = self.time() - self.lastWorldStepTime;
         self.lastWorldStepTime = self.time();
         self.world.step(1 / 60, timeSinceLastCall, 10);
@@ -177,6 +183,24 @@ module.exports = (function () {
   Game.prototype.pauseToggle = function () {
     this.paused = !this.paused;
 
+    if (!this.paused) {
+      this.lastWorldStepTime = this.time();
+    }
+  };
+  
+  /**
+   * Called when the window loses focus
+   */
+  Game.prototype.windowBlur = function (e) {
+    this.windowFocused = false;
+  };
+
+  /**
+   * Called when the window gets focus
+   */
+  Game.prototype.windowFocus = function (e) {
+    this.windowFocused = true;
+    
     if (!this.paused) {
       this.lastWorldStepTime = this.time();
     }

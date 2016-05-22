@@ -1,0 +1,17 @@
+body {
+	background: #000;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+#viewport {
+	background: #000;
+	display: none;
+}
+
+#loading {
+	font-size: 36px;
+	font-weight: bold;
+	color: #fff;
+	text-align: center;
+	margin-top: 100px;
+}
