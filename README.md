@@ -4,8 +4,8 @@ A simple 2D vector game model framework using p2.js for physics and Pixi.js for 
 
 Live demo:
 
-- http://booleanoperations.com/experiments/p2Pixi/buggy
-- http://booleanoperations.com/experiments/p2Pixi/spinners
+- http://booleanoperations.com/experiments/p2pixi/buggy
+- http://booleanoperations.com/experiments/p2pixi/spinners
 
 Games using p2Pixi:
 
