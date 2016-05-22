@@ -20,7 +20,8 @@
         assetUrls: [
           'img/tile-pink.png',
           'img/tile-green.png',
-          'img/tile-blue.png'
+          'img/tile-blue.png',
+          'img/tile-yellow.png'
         ]
       };
 

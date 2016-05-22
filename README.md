@@ -4,7 +4,8 @@ A simple 2D vector game model framework using p2.js for physics and Pixi.js for 
 
 Live demo:
 
-- http://booleanoperations.com/experiments/p2/buggy
+- http://booleanoperations.com/experiments/p2Pixi/buggy
+- http://booleanoperations.com/experiments/p2Pixi/spinners
 
 Games using p2Pixi:
 
@@ -14,13 +15,13 @@ Games using p2Pixi:
 Here is a brief overview of the 3 classes and their key methods:
 
 ##Game
-Serves as an abstract base class for your own game. Refer to the "space buggy" demos for example usage.
+Serves as an abstract base class for your own game. Refer to the demo Game classes for example usage.
 
 ###addGameObject
 Adds the supplied GameObject to the Game.
 
 ###removeGameObject
-Removes the supplied GameObject from the Game, which results in the removal of its bodies and constraints from the p2 physics world and the bodies' shapes from the Pixi rendering stage.
+Defers to the remove function of the supplied GameObject
 
 ###loadAssets
 Loads the supplied assets asyncronously with a Pixi AssetLoader.
@@ -70,6 +71,16 @@ Using p2 units means that if you decide to change your pixelsPerLengthUnit value
 
 ###addConstraint
 Adds the supplied p2 constraint to the GameObject and to the game's world.
+
+###addChild
+Adds the supplied GameObject as a child of this GameObject. A child is simply a logically linked GameObject.
+
+###updateTransforms
+Updates the PIXI position and rotation transforms for each of this GameObject's p2 bodies. Recursively calls updateTransforms on child GameObjects.
+
+###remove
+Removes the GameObject from the Game, which results in the removal of its bodies and constraints from the p2 physics world and the bodies' shapes from the Pixi rendering stage.
+Also removes all child GameObjects.
 
 
 ##PixiAdapter

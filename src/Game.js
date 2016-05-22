@@ -135,7 +135,7 @@
     var pixiAdapter = this.pixiAdapter;
 
     for (var i = 0; i < gameObjects.length; i++) {
-      gameObjects[i].render();
+      gameObjects[i].updateTransforms();
     }
 
     pixiAdapter.renderer.render(pixiAdapter.stage);

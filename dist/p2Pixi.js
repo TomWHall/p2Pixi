@@ -143,7 +143,7 @@ module.exports = (function () {
     var pixiAdapter = this.pixiAdapter;
 
     for (var i = 0; i < gameObjects.length; i++) {
-      gameObjects[i].render();
+      gameObjects[i].updateTransforms();
     }
 
     pixiAdapter.renderer.render(pixiAdapter.stage);
@@ -302,10 +302,9 @@ module.exports = (function () {
   }
 
   /**
-   * Renders this GameObject and all children
+   * Updates the PIXI container transforms for this GameObject and all children
    */
-  GameObject.prototype.render = function () {
-    // Update Container transforms
+  GameObject.prototype.updateTransforms = function () {
     var pixiAdapter = this.game.pixiAdapter;
     var ppu = pixiAdapter.pixelsPerLengthUnit;
     var bodies = this.bodies;
@@ -320,10 +319,10 @@ module.exports = (function () {
       container.rotation = -body.angle;
     }
 
-    // Render children
+    // Update children
     var children = this.children;
     for (var i = 0; i < children.length; i++) {
-      children[i].render();
+      children[i].updateTransforms();
     }
   }
 
