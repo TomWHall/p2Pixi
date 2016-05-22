@@ -12,12 +12,12 @@
       var options = {
         worldOptions: {
           gravity: [0, 0]
-        }
-        , pixiOptions: {
+        },
+        pixiOptions: {
           view: document.getElementById('viewport'),
           transparent: true
-        }
-        , assetUrls: [
+        },
+        assetUrls: [
           'img/tile-pink.png',
           'img/tile-green.png',
           'img/tile-blue.png'
@@ -34,14 +34,14 @@
       this.hardMaterial = new p2.Material();
 
       this.world.addContactMaterial(new p2.ContactMaterial(this.ballMaterial, this.hardMaterial, {
-        restitution: 0.5
-        , stiffness: Number.MAX_VALUE
-        , friction: 1
+        restitution: 0.5,
+        stiffness: Number.MAX_VALUE,
+        friction: 1
       }));
 
       this.terrainBodyShapeOptions = {
-        collisionGroup: 1
-        , collisionMask: 1
+        collisionGroup: 1,
+        collisionMask: 1
       };
 
       this.terrain = new SpinnersDemo.Terrain(this, [0, 0], 2);

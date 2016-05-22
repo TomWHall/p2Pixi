@@ -1,6 +1,6 @@
 {
   "name": "p2Pixi",
-  "version": "0.8.6",
+  "version": "0.9.0",
   "description": "A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering.",
   "author": "Tom W Hall <tomshalls@gmail.com>",
   "keywords": [

@@ -5,6 +5,7 @@
   var Bar = (function () {
 
     function Bar(game, position, width, height, angle) {
+      
       P2Pixi.GameObject.call(this, game);
 
       angle = angle || 0;
@@ -13,7 +14,7 @@
         mass: 0.1,
         position: position
       });
-      
+
       var barBox = new p2.Box({ width: width, height: height });
 
       bar.angle = angle;
@@ -25,13 +26,13 @@
 
       this.addBody(bar)
         .addShape(bar,
-        barBox,
-        [0, 0],
-        0,
-        game.terrainBodyShapeOptions,
-        null,
-        barTexture,
-        1);
+          barBox,
+          [0, 0],
+          0,
+          game.terrainBodyShapeOptions,
+          null,
+          barTexture,
+          1);
     }
 
     Bar.prototype = Object.create(P2Pixi.GameObject.prototype);
