@@ -2,17 +2,17 @@
 
 A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering.
 
-Live demo:
+Live demos:
 
-- http://booleanoperations.com/experiments/p2pixi/buggy
-- http://booleanoperations.com/experiments/p2pixi/spinners
+[Buggy](http://booleanoperations.com/experiments/p2pixi/buggy)
+[Spinners](http://booleanoperations.com/experiments/p2pixi/spinners)
 
 Games using p2Pixi:
 
-- http://booleanoperations.com/games/descensus
+[Descensus](http://booleanoperations.com/games/descensus)
 
 
-Here is a brief overview of the 3 classes and their key methods:
+Below is a brief overview of the 3 classes and their key methods. Refer to the TypeScript definitions for further details.
 
 ##Game
 Serves as an abstract base class for your own game. Refer to the demo Game classes for example usage.
@@ -54,17 +54,21 @@ Adds the supplied p2 body to the GameObject and to the game's world, and creates
 ###addShape
 Adds the supplied p2 shape to the supplied p2 body.
 
-When specifying styles via the styles parameter, lineWidth can either be specified as a Pixi line width, for example:
+When specifying styles via options.styleOptions, lineWidth can either be specified as a Pixi line width, for example:
 
+```
 { 
     lineWidth: 1
 }
+```
 
 Or in p2 units, which take precedence, like so:
 
+```
 { 
     lineWidthUnits: 0.0078125
 }
+```
 
 Using Pixi's lineWidth means that regardless of your pixelsPerLengthUnit value, any shape outlines (if defined) will have a fixed pixel width.
 Using p2 units means that if you decide to change your pixelsPerLengthUnit value then all line thicknesses will scale accordingly.

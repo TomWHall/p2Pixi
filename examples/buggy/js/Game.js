@@ -10,12 +10,11 @@
     function Game() {
 
       var options = {
-        worldOptions: {
-          gravity: [0, -9.8]
-        },
-        pixiOptions: {
-          view: document.getElementById('viewport'),
-          transparent: true
+        pixiAdapterOptions: {
+          rendererOptions: {
+            view: document.getElementById('viewport'),
+            transparent: true
+          }
         },
         assetUrls: [
           'img/rock.jpg',

@@ -6,21 +6,25 @@
   function Game(options) {
 
     options = options || {};
+    options.pixiAdapterOptions = options.pixiAdapterOptions || {};
+    options.pixiAdapter = options.pixiAdapter || new P2Pixi.PixiAdapter(options.pixiAdapterOptions);
+    options.worldOptions = options.worldOptions || {};
+    options.worldOptions.gravity = options.worldOptions.gravity || [0, -9.8];
     options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];
-    this.options = options;
 
-    this.world = new p2.World(options.worldOptions || {});
-    this.pixiAdapter = new P2Pixi.PixiAdapter(options.pixiOptions || {});
+    this.options = options;
+    this.pixiAdapter = options.pixiAdapter;
+    this.world = new p2.World(options.worldOptions);
 
     this.gameObjects = [];
     this.trackedBody = null;
-    
+
     this.paused = false;
     this.windowFocused = true;
-    
+
     var self = this;
-    window.addEventListener("blur", function(e) { self.windowBlur(e); })
-    window.addEventListener("focus", function(e) { self.windowFocus(e); })
+    window.addEventListener('blur', function (e) { self.windowBlur(e); });
+    window.addEventListener('focus', function (e) { self.windowFocus(e); });
 
     this.lastWorldStepTime = null;
 
@@ -120,10 +124,9 @@
       var containerPosition = pixiAdapter.container.position;
       var trackedBodyPosition = trackedBody.position;
       var trackedBodyOffset = this.options.trackedBodyOffset;
-      var deviceScale = pixiAdapter.deviceScale;
 
-      containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
-      containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
+      containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu);
+      containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu);
     }
   };
 
@@ -179,7 +182,7 @@
       this.lastWorldStepTime = this.time();
     }
   };
-  
+
   /**
    * Called when the window loses focus
    */
@@ -192,7 +195,7 @@
    */
   Game.prototype.windowFocus = function (e) {
     this.windowFocused = true;
-    
+
     if (!this.paused) {
       this.lastWorldStepTime = this.time();
     }

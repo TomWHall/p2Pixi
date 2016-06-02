@@ -1,0 +1,14 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "target": "es5",
+    "module": "commonjs"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

@@ -21,13 +21,12 @@
       this.addBody(ball)
         .addShape(ball,
           ballCircle,
-          [0, 0],
-          0,
-          game.terrainBodyShapeOptions,
-          null,
-          ballTexture,
-          1,
-          { tile: false });
+          {
+            textureOptions: {
+              texture: ballTexture,
+              tile: false
+            }
+          });
     }
 
     Ball.prototype = Object.create(P2Pixi.GameObject.prototype);

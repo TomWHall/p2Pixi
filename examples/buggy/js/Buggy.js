@@ -22,7 +22,7 @@
 
       var self = this;
 
-      var buggyBodyShapeOptions = {
+      var collisionOptions = {
         collisionGroup: 2,
         collisionMask: 1
       };
@@ -54,31 +54,35 @@
       this.addBody(chassis)
         .addShape(chassis,
           new p2.Circle({ radius: 0.3 }),
-          [0, 0.2],
-          0,
-          buggyBodyShapeOptions,
-          null,
-          glassTexture,
-          0.9)
+          {
+            offset: [0, 0.2],
+            textureOptions: {
+              texture: glassTexture
+            },
+            alpha: 0.9,
+            collisionOptions: collisionOptions
+          })
         .addShape(chassis,
           new p2.Convex({ vertices: [[-0.5, -0.2], [0.5, -0.2], [0.7, 0.2], [-0.7, 0.2]] }),
-          [0, 0],
-          0,
-          buggyBodyShapeOptions,
           {
-            lineColor: 0x333333,
-            lineWidth: 2
-          },
-          metalTexture)
+            textureOptions: {
+              texture: metalTexture
+            },
+            styleOptions: {
+              lineColor: 0x333333,
+              lineWidth: 2
+            },
+            collisionOptions: collisionOptions
+          })
         .addShape(chassis,
           new p2.Box({ width: 1.5, height: 0.03 }),
-          [0, 0.2],
-          0,
-          buggyBodyShapeOptions,
           {
-            fillColor: 0x2f424d
-          },
-          null);
+            offset: [0, 0.2],
+            styleOptions: {
+              fillColor: 0x2f424d
+            },
+            collisionOptions: collisionOptions
+          });
 
 
       // Left suspension bar
@@ -91,13 +95,12 @@
       this.addBody(leftSuspensionBar)
         .addShape(leftSuspensionBar,
           new p2.Box({ width: 0.5, height: 0.07 }),
-          [0, 0],
-          0,
-          buggyBodyShapeOptions,
           {
-            fillColor: 0x333333
-          },
-          null);
+            styleOptions: {
+              fillColor: 0x333333
+            },
+            collisionOptions: collisionOptions
+          });
 
 
       // Right suspension bar
@@ -110,13 +113,12 @@
       this.addBody(rightSuspensionBar)
         .addShape(rightSuspensionBar,
           new p2.Box({ width: 0.5, height: 0.07 }),
-          [0, 0],
-          0,
-          buggyBodyShapeOptions,
           {
-            fillColor: 0x333333
-          },
-          null);
+            styleOptions: {
+              fillColor: 0x333333
+            },
+            collisionOptions: collisionOptions
+          });
 
 
       // Connect suspension bars to chassis
@@ -158,29 +160,28 @@
         this.addBody(wheel)
           .addShape(wheel, // Tyre
             tyre,
-            [0, 0],
-            0,
-            buggyBodyShapeOptions,
-            null,
-            tyreTexture)
+            {
+              textureOptions: {
+                texture: tyreTexture
+              },
+              collisionOptions: collisionOptions
+            })
           .addShape(wheel, // Hub
             new p2.Circle({ radius: 0.1 }),
-            [0, 0],
-            0,
-            buggyBodyShapeOptions,
             {
-              fillColor: 0x999999
-            },
-            null)
+              styleOptions: {
+                fillColor: 0x999999
+              },
+              collisionOptions: collisionOptions
+            })
           .addShape(wheel, // Hub detail
             new p2.Box({ width: 0.12, height: 0.025 }),
-            [0, 0],
-            0,
-            buggyBodyShapeOptions,
             {
-              fillColor: 0x444444
-            },
-            null);
+              styleOptions: {
+                fillColor: 0x444444
+              },
+              collisionOptions: collisionOptions
+            });
       }
 
 

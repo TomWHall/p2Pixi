@@ -35,22 +35,14 @@
    * Adds the supplied p2 shape to the supplied p2 body
    * @param  {Body} body
    * @param  {Shape} shape
-   * @param  {Vector} offset
-   * @param  {Number} angle
    * @param  {Object} options
-   * @param  {Object} style
-   * @param  {Texture} texture
-   * @param  {Number} alpha
-   * @param  {Object} textureOptions
    * @return {GameObject} gameObject
    */
-  GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha, textureOptions) {
-    offset = offset || [0, 0];
-    angle = angle || 0;
-
-    options = options || {};
-    shape.collisionGroup = options.collisionGroup || 1;
-    shape.collisionMask = options.collisionMask || 1;
+  GameObject.prototype.addShape = function (body, shape, options) {
+    var offset = options.offset || [0, 0];
+    var angle = options.angle || 0;
+    shape.collisionGroup = (options.collisionOptions && options.collisionOptions.collisionGroup) || 1;
+    shape.collisionMask = (options.collisionOptions && options.collisionOptions.collisionMask) || 1;
 
     body.addShape(shape, offset, angle);
 
@@ -58,12 +50,7 @@
 
     this.game.pixiAdapter.addShape(container,
       shape,
-      offset,
-      angle,
-      style,
-      texture,
-      alpha,
-      textureOptions);
+      options);
 
     return this;
   };

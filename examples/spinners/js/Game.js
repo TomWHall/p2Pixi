@@ -13,9 +13,11 @@
         worldOptions: {
           gravity: [0, 0]
         },
-        pixiOptions: {
-          view: document.getElementById('viewport'),
-          transparent: true
+        pixiAdapterOptions: {
+          rendererOptions: {
+            view: document.getElementById('viewport'),
+            transparent: true
+          }
         },
         assetUrls: [
           'img/tile-pink.png',
@@ -39,11 +41,6 @@
         stiffness: Number.MAX_VALUE,
         friction: 1
       }));
-
-      this.terrainBodyShapeOptions = {
-        collisionGroup: 1,
-        collisionMask: 1
-      };
 
       this.terrain = new SpinnersDemo.Terrain(this, [0, 0], 2);
       this.addGameObject(this.terrain);

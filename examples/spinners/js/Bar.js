@@ -27,12 +27,11 @@
       this.addBody(bar)
         .addShape(bar,
           barBox,
-          [0, 0],
-          0,
-          game.terrainBodyShapeOptions,
-          null,
-          barTexture,
-          1);
+          {
+            textureOptions: {
+              texture: barTexture
+            }
+          });
     }
 
     Bar.prototype = Object.create(P2Pixi.GameObject.prototype);

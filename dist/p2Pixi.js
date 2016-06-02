@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v0.9.0 - 22-05-2016 
+ * p2Pixi v1.0.0 - 02-06-2016 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -14,21 +14,25 @@ module.exports = (function () {
   function Game(options) {
 
     options = options || {};
+    options.pixiAdapterOptions = options.pixiAdapterOptions || {};
+    options.pixiAdapter = options.pixiAdapter || new P2Pixi.PixiAdapter(options.pixiAdapterOptions);
+    options.worldOptions = options.worldOptions || {};
+    options.worldOptions.gravity = options.worldOptions.gravity || [0, -9.8];
     options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];
-    this.options = options;
 
-    this.world = new p2.World(options.worldOptions || {});
-    this.pixiAdapter = new P2Pixi.PixiAdapter(options.pixiOptions || {});
+    this.options = options;
+    this.pixiAdapter = options.pixiAdapter;
+    this.world = new p2.World(options.worldOptions);
 
     this.gameObjects = [];
     this.trackedBody = null;
-    
+
     this.paused = false;
     this.windowFocused = true;
-    
+
     var self = this;
-    window.addEventListener("blur", function(e) { self.windowBlur(e); })
-    window.addEventListener("focus", function(e) { self.windowFocus(e); })
+    window.addEventListener('blur', function (e) { self.windowBlur(e); });
+    window.addEventListener('focus', function (e) { self.windowFocus(e); });
 
     this.lastWorldStepTime = null;
 
@@ -128,10 +132,9 @@ module.exports = (function () {
       var containerPosition = pixiAdapter.container.position;
       var trackedBodyPosition = trackedBody.position;
       var trackedBodyOffset = this.options.trackedBodyOffset;
-      var deviceScale = pixiAdapter.deviceScale;
 
-      containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu * deviceScale);
-      containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu * deviceScale);
+      containerPosition.x = ((trackedBodyOffset[0] + 1) * renderer.width * 0.5) - (trackedBodyPosition[0] * ppu);
+      containerPosition.y = ((trackedBodyOffset[1] + 1) * renderer.height * 0.5) + (trackedBodyPosition[1] * ppu);
     }
   };
 
@@ -187,7 +190,7 @@ module.exports = (function () {
       this.lastWorldStepTime = this.time();
     }
   };
-  
+
   /**
    * Called when the window loses focus
    */
@@ -200,7 +203,7 @@ module.exports = (function () {
    */
   Game.prototype.windowFocus = function (e) {
     this.windowFocused = true;
-    
+
     if (!this.paused) {
       this.lastWorldStepTime = this.time();
     }
@@ -246,22 +249,14 @@ module.exports = (function () {
    * Adds the supplied p2 shape to the supplied p2 body
    * @param  {Body} body
    * @param  {Shape} shape
-   * @param  {Vector} offset
-   * @param  {Number} angle
    * @param  {Object} options
-   * @param  {Object} style
-   * @param  {Texture} texture
-   * @param  {Number} alpha
-   * @param  {Object} textureOptions
    * @return {GameObject} gameObject
    */
-  GameObject.prototype.addShape = function (body, shape, offset, angle, options, style, texture, alpha, textureOptions) {
-    offset = offset || [0, 0];
-    angle = angle || 0;
-
-    options = options || {};
-    shape.collisionGroup = options.collisionGroup || 1;
-    shape.collisionMask = options.collisionMask || 1;
+  GameObject.prototype.addShape = function (body, shape, options) {
+    var offset = options.offset || [0, 0];
+    var angle = options.angle || 0;
+    shape.collisionGroup = (options.collisionOptions && options.collisionOptions.collisionGroup) || 1;
+    shape.collisionMask = (options.collisionOptions && options.collisionOptions.collisionMask) || 1;
 
     body.addShape(shape, offset, angle);
 
@@ -269,12 +264,7 @@ module.exports = (function () {
 
     this.game.pixiAdapter.addShape(container,
       shape,
-      offset,
-      angle,
-      style,
-      texture,
-      alpha,
-      textureOptions);
+      options);
 
     return this;
   };
@@ -365,7 +355,6 @@ module.exports = (function () {
 module.exports = (function () {
 
   var vec2 = p2.vec2;
-  var Body = p2.Body;
   var Circle = p2.Circle;
   var Capsule = p2.Capsule;
   var Convex = p2.Convex;
@@ -374,70 +363,45 @@ module.exports = (function () {
   var Particle = p2.Particle;
   var Line = p2.Line;
   var Heightfield = p2.Heightfield;
-  var EventEmitter = p2.EventEmitter;
 
   /**
    * Creates a new PixiAdapter instance
    */
   function PixiAdapter(options) {
 
-    var settings = {
-      pixelsPerLengthUnit: 128,
+    var defaultOptions = {
       width: 1280,
       height: 720,
-      transparent: false,
-      antialias: true,
-      useDeviceAspect: false,
-      webGLEnabled: true,
-      useDevicePixels: true
+      pixelsPerLengthUnit: 128,
+      useDeviceAspect: false
     };
 
     options = options || {};
-
     for (var key in options) {
-      settings[key] = options[key];
+      defaultOptions[key] = options[key];
     }
 
-    if (settings.useDeviceAspect) {
-      settings.height = (window.innerHeight / window.innerWidth) * settings.width;
+    if (defaultOptions.useDeviceAspect) {
+      defaultOptions.height = (window.innerHeight / window.innerWidth) * defaultOptions.width;
     }
 
-    this.settings = settings;
-    this.pixelsPerLengthUnit = settings.pixelsPerLengthUnit;
-
-    EventEmitter.call(this);
+    this.options = defaultOptions;
+    this.pixelsPerLengthUnit = this.options.pixelsPerLengthUnit;
 
     this.stage = new PIXI.Container();
     this.container = new PIXI.Container();
     this.stage.addChild(this.container);
 
-    this.setDeviceProperties();
     this.setupRenderer();
     this.setupView();
   }
-
-  PixiAdapter.prototype = new EventEmitter();
-
-  /**
-   * Reads and stores device properties
-   */
-  PixiAdapter.prototype.setDeviceProperties = function () {
-    var settings = this.settings;
-
-    this.devicePixelRatio = settings.useDevicePixels ? (window.devicePixelRatio || 1) : 1;
-    this.deviceScale = (this.devicePixelRatio !== 1 ? (Math.round(Math.max(screen.width, screen.height) * this.devicePixelRatio) / Math.max(settings.width, settings.height)) : 1);
-  };
 
   /**
    * Sets up the Pixi renderer
    */
   PixiAdapter.prototype.setupRenderer = function () {
-    var settings = this.settings;
-    var deviceScale = this.deviceScale;
-
-    this.renderer = settings.webGLEnabled
-      ? PIXI.autoDetectRenderer(settings.width * deviceScale, settings.height * deviceScale, settings)
-      : new PIXI.CanvasRenderer(settings.width * deviceScale, settings.height * deviceScale, settings);
+    var options = this.options;
+    this.renderer = PIXI.autoDetectRenderer(options.width, options.height, options.rendererOptions);
   };
 
   /**
@@ -448,20 +412,18 @@ module.exports = (function () {
     var renderer = this.renderer;
     var view = this.renderer.view;
     var container = this.container;
-    var deviceScale = this.deviceScale;
 
     view.style.position = 'absolute';
 
-    document.body.appendChild(this.renderer.view);
+    if (!this.options.view) {
+      document.body.appendChild(this.renderer.view);
+    }
 
     this.windowWidth = window.innerWidth;
     this.windowHeight = window.innerHeight;
 
     container.position.x = renderer.width / 2;
     container.position.y = renderer.height / 2;
-
-    container.scale.x = deviceScale;
-    container.scale.y = deviceScale;
 
     this.viewCssWidth = 0;
     this.viewCssHeight = 0;
@@ -508,13 +470,12 @@ module.exports = (function () {
    * @param  {Graphics} graphics
    * @param  {Number} x0
    * @param  {Number} x1
-   * @param  {Number} color
    * @param  {object} style
    */
-  PixiAdapter.prototype.drawPlane = function (graphics, x0, x1, color, style) {
+  PixiAdapter.prototype.drawPlane = function (graphics, x0, x1, style) {
     style = style || {};
 
-    var max = 1e6
+    var max = 1e6;
     var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0;
     var lineColor = style.lineColor || 0x000000;
     var fillColor = style.fillColor;
@@ -630,7 +591,7 @@ module.exports = (function () {
    * @param  {Number} h
    * @param  {object} style
    */
-  PixiAdapter.prototype.drawRectangle = function (graphics, x, y, w, h, style) {
+  PixiAdapter.prototype.drawBox = function (graphics, x, y, w, h, style) {
     style = style || {};
 
     var lineWidth = style.lineWidthUnits ? style.lineWidthUnits * this.pixelsPerLengthUnit : style.lineWidth || 0;
@@ -779,7 +740,7 @@ module.exports = (function () {
       this.drawLine(graphics, shape.length * ppu, style);
 
     } else if (shape instanceof Box) {
-      this.drawRectangle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.width * ppu, shape.height * ppu, style);
+      this.drawBox(graphics, offset[0] * ppu, -offset[1] * ppu, shape.width * ppu, shape.height * ppu, style);
 
     } else if (shape instanceof Capsule) {
       this.drawCapsule(graphics, offset[0] * ppu, -offset[1] * ppu, angle, shape.length * ppu, shape.radius * ppu, style);
@@ -814,20 +775,24 @@ module.exports = (function () {
    * Adds the supplied shape to the supplied Container, using vectors and / or a texture
    * @param  {Container} container
    * @param  {Shape} shape
-   * @param  {Vector} offset
-   * @param  {Number} angle
-   * @param  {Object} style
-   * @param  {Texture} texture
-   * @param  {Number} alpha
+   * @param  {Object} shapeOptions
    */
-  PixiAdapter.prototype.addShape = function (container, shape, offset, angle, style, texture, alpha, textureOptions) {
+  PixiAdapter.prototype.addShape = function (container, shape, shapeOptions) {
+
+    shapeOptions = shapeOptions || {};
+    var offset = shapeOptions.offset || [0, 0];
+    var angle = shapeOptions.angle || 0;
+    var textureOptions = shapeOptions.textureOptions;
+    var styleOptions = shapeOptions.styleOptions;
+    var alpha = shapeOptions.alpha || 1;
 
     var zero = [0, 0];
     var ppu = this.pixelsPerLengthUnit;
-    var textureOptions = textureOptions || {};
 
     // If a Pixi texture has been specified...
-    if (texture) {
+    if (textureOptions) {
+      var texture = textureOptions.texture;
+      
       // Calculate the bounding box of the shape when at zero offset and 0 angle
       var aabb = new p2.AABB();
       shape.computeAABB(aabb, zero, 0);
@@ -840,7 +805,7 @@ module.exports = (function () {
 
       // Cater for Heightfield shapes
       if (shape instanceof Heightfield) {
-        bottom = -(this.settings.height / ppu);
+        bottom = -(this.options.height / ppu);
       }
 
       var width = right - left;
@@ -854,7 +819,7 @@ module.exports = (function () {
         sprite = new PIXI.extras.TilingSprite(texture, width * ppu, height * ppu);
       }
 
-      sprite.alpha = alpha || 1;
+      sprite.alpha = alpha;
 
       // If the shape is anything other than a box, we need a mask for the texture.
       // We use the shape itself to create a new Graphics object.
@@ -902,9 +867,9 @@ module.exports = (function () {
     }
 
     // If any Pixi vector styles have been specified...
-    if (style) {
+    if (styleOptions) {
       var graphics = new PIXI.Graphics();
-      graphics.alpha = alpha || 1;
+      graphics.alpha = alpha;
       graphics.position.x = (offset[0] * ppu);
       graphics.position.y = -(offset[1] * ppu);
       graphics.rotation = -angle;
@@ -913,7 +878,7 @@ module.exports = (function () {
         shape,
         zero,
         0,
-        style);
+        styleOptions);
 
       container.addChild(graphics);
     }
@@ -921,39 +886,39 @@ module.exports = (function () {
 
   /**
    * Resizes the Pixi renderer's view to fit proportionally in the supplied window dimensions
-   * @param  {Number} w
-   * @param  {Number} h
+   * @param  {Number} width
+   * @param  {Number} height
    */
-  PixiAdapter.prototype.resize = function (w, h) {
+  PixiAdapter.prototype.resize = function (width, height) {
     var renderer = this.renderer;
     var view = renderer.view;
-    var ratio = w / h;
+    var ratio = width / height;
     var pixiRatio = renderer.width / renderer.height;
 
-    this.windowWidth = w;
-    this.windowHeight = h;
+    this.windowWidth = width;
+    this.windowHeight = height;
 
     if (ratio > pixiRatio) { // Screen is wider than the renderer
 
-      this.viewCssWidth = h * pixiRatio;
-      this.viewCssHeight = h;
+      this.viewCssWidth = height * pixiRatio;
+      this.viewCssHeight = height;
 
       view.style.width = this.viewCssWidth + 'px';
       view.style.height = this.viewCssHeight + 'px';
 
-      view.style.left = Math.round((w - this.viewCssWidth) / 2) + 'px';
+      view.style.left = Math.round((width - this.viewCssWidth) / 2) + 'px';
       view.style.top = null;
 
     } else { // Screen is narrower
 
-      this.viewCssWidth = w;
-      this.viewCssHeight = Math.round(w / pixiRatio);
+      this.viewCssWidth = width;
+      this.viewCssHeight = Math.round(width / pixiRatio);
 
       view.style.width = this.viewCssWidth + 'px';
       view.style.height = this.viewCssHeight + 'px';
 
       view.style.left = null;
-      view.style.top = Math.round((h - this.viewCssHeight) / 2) + 'px';
+      view.style.top = Math.round((height - this.viewCssHeight) / 2) + 'px';
     }
   };
 

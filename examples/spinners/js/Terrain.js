@@ -27,12 +27,11 @@
         this.addBody(wall)
           .addShape(wall,
           wallBox,
-          [0, 0],
-          0,
-          game.terrainBodyShapeOptions,
-          null,
-          wallTexture,
-          1);
+          {
+            textureOptions: {
+              texture: wallTexture
+            }
+          });
       }
 
       addWall.call(this, [-3, 0], 0.25, 6);

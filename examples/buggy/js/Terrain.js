@@ -10,7 +10,7 @@
      */
     function Terrain(game) {
 
-      var terrainBodyOptions = {
+      var collisionOptions = {
         collisionGroup: 1,
         collisionMask: 1 | 2
       };
@@ -38,11 +38,12 @@
       this.addBody(ground)
         .addShape(ground,
           heightfield,
-          [0, 0],
-          0,
-          terrainBodyOptions,
-          null,
-          rockTexture);
+          {
+            textureOptions: {
+              texture: rockTexture
+            },
+            collisionOptions: collisionOptions
+          });
     }
 
     Terrain.prototype = Object.create(P2Pixi.GameObject.prototype);
