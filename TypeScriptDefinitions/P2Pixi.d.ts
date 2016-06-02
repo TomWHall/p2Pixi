@@ -100,7 +100,6 @@ declare module P2Pixi {
     windowWidth: number;
     windowHeight: number;
 
-    setDeviceProperties(): void;
     setupRenderer(): void;
     setupView(): void;
 
@@ -118,10 +117,10 @@ declare module P2Pixi {
 
   export interface PixiAdapterOptions {
 
-    width: number;
-    height: number;
-    pixelsPerLengthUnit: number;
-    useDevicePixels?: boolean;
+    width?: number;
+    height?: number;
+    pixelsPerLengthUnit?: number;
+    useDeviceAspect?: boolean;
     rendererOptions?: PIXI.RendererOptions;
 
   }
