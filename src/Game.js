@@ -1,4 +1,6 @@
-﻿module.exports = (function () {
+﻿var PixiAdapter = require('./PixiAdapter');
+
+module.exports = (function () {
 
   /**
    * Creates a new Game instance
@@ -7,7 +9,7 @@
 
     options = options || {};
     options.pixiAdapterOptions = options.pixiAdapterOptions || {};
-    options.pixiAdapter = options.pixiAdapter || new P2Pixi.PixiAdapter(options.pixiAdapterOptions);
+    options.pixiAdapter = options.pixiAdapter || new PixiAdapter(options.pixiAdapterOptions);
     options.worldOptions = options.worldOptions || {};
     options.worldOptions.gravity = options.worldOptions.gravity || [0, -9.8];
     options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];

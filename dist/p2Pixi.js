@@ -1,11 +1,13 @@
 /** 
- * p2Pixi v1.0.0 - 02-06-2016 
+ * p2Pixi v1.0.0 - 03-06-2016 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
  */
 
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.P2Pixi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var PixiAdapter = require('./PixiAdapter');
+
 module.exports = (function () {
 
   /**
@@ -15,7 +17,7 @@ module.exports = (function () {
 
     options = options || {};
     options.pixiAdapterOptions = options.pixiAdapterOptions || {};
-    options.pixiAdapter = options.pixiAdapter || new P2Pixi.PixiAdapter(options.pixiAdapterOptions);
+    options.pixiAdapter = options.pixiAdapter || new PixiAdapter(options.pixiAdapterOptions);
     options.worldOptions = options.worldOptions || {};
     options.worldOptions.gravity = options.worldOptions.gravity || [0, -9.8];
     options.trackedBodyOffset = options.trackedBodyOffset || [0, 0];
@@ -211,7 +213,7 @@ module.exports = (function () {
 
   return Game;
 })();
-},{}],2:[function(require,module,exports){
+},{"./PixiAdapter":3}],2:[function(require,module,exports){
 module.exports = (function () {
 
   /**
