@@ -48,6 +48,7 @@ declare module P2Pixi {
     pixiAdapterOptions?: PixiAdapterOptions;
     trackedBodyOffset?: number[];
     worldOptions?: any;
+    assetUrls?: string[];
 
   }
 
@@ -151,6 +152,4 @@ declare module P2Pixi {
   }
 }
 
-declare module 'P2Pixi' {
-  export = P2Pixi;
-}
+export = P2Pixi;
