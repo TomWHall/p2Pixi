@@ -1,6 +1,13 @@
-// Source: https://github.com/schteppe/p2.js/blob/master/index.d.ts
+// Type definitions for p2.js v0.7.1
+// Project: https://github.com/schteppe/p2.js/
+// Definitions by: Clark Stevenson <https://github.com/clark-stevenson>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare module p2 {
+declare module "p2" {
+    export = p2;
+}
+
+declare namespace p2 {
 
     export class AABB {
 
@@ -9,15 +16,11 @@ declare module p2 {
             lowerBound?: number[];
         });
 
-        upperBound: number[];
-        lowerBound: number[];
-
         setFromPoints(points: number[][], position: number[], angle: number, skinSize: number): void;
         copy(aabb: AABB): void;
         extend(aabb: AABB): void;
         overlaps(aabb: AABB): boolean;
-        containsPoint(point: number[]): boolean;
-        overlapsRay(ray: Ray): number;
+
     }
 
     export class Broadphase {
@@ -45,7 +48,29 @@ declare module p2 {
 
     }
 
-    export class NaiveBroadphase extends Broadphase {
+    export class GridBroadphase extends Broadphase {
+
+        constructor(options?: {
+            xmin?: number;
+            xmax?: number;
+            ymin?: number;
+            ymax?: number;
+            nx?: number;
+            ny?: number;
+        });
+
+        xmin: number;
+        xmax: number;
+        ymin: number;
+        ymax: number;
+        nx: number;
+        ny: number;
+        binsizeX: number;
+        binsizeY: number;
+
+    }
+
+    export class NativeBroadphase extends Broadphase {
 
     }
 
@@ -73,7 +98,6 @@ declare module p2 {
         reset(): void;
         createContactEquation(bodyA: Body, bodyB: Body, shapeA: Shape, shapeB: Shape): ContactEquation;
         createFrictionFromContact(c: ContactEquation): FrictionEquation;
-        bodiesOverlap(bodyA: Body, bodyB: Body, checkCollisionMasks?: boolean): boolean;
 
     }
 
@@ -82,7 +106,6 @@ declare module p2 {
         axisList: Body[];
         axisIndex: number;
 
-        sortList(): void;
     }
 
     export class Constraint {
@@ -95,7 +118,6 @@ declare module p2 {
 
         constructor(bodyA: Body, bodyB: Body, type: number, options?: {
             collideConnected?: boolean;
-            wakeUpBodies?: boolean;
         });
 
         type: number;
@@ -112,9 +134,7 @@ declare module p2 {
 
     export class DistanceConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             distance?: number;
             localAnchorA?: number[];
             localAnchorB?: number[];
@@ -138,9 +158,7 @@ declare module p2 {
 
     export class GearConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             angle?: number;
             ratio?: number;
             maxTorque?: number;
@@ -156,9 +174,7 @@ declare module p2 {
 
     export class LockConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             localOffsetB?: number[];
             localAngleB?: number;
             maxForce?: number;
@@ -171,9 +187,7 @@ declare module p2 {
 
     export class PrismaticConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             maxForce?: number;
             localAnchorA?: number[];
             localAnchorB?: number[];
@@ -206,9 +220,7 @@ declare module p2 {
 
     export class RevoluteConstraint extends Constraint {
 
-        constructor(bodyA: Body, bodyB: Body, type: number, options?: {
-            collideConnected?: boolean;
-            wakeUpBodies?: boolean;
+        constructor(bodyA: Body, bodyB: Body, options?: {
             worldPivot?: number[];
             localPivotA?: number[];
             localPivotB?: number[];
@@ -341,22 +353,22 @@ declare module p2 {
 
     export class EventEmitter {
 
-        on(type: string, listener: Function, context?: any): EventEmitter;
+        on(type: string, listener: Function, context: any): EventEmitter;
         has(type: string, listener: Function): boolean;
         off(type: string, listener: Function): EventEmitter;
         emit(event: any): EventEmitter;
 
     }
 
-    export interface ContactMaterialOptions {
+    export class ContactMaterialOptions {
 
-        friction?: number;
-        restitution?: number;
-        stiffness?: number;
-        relaxation?: number;
-        frictionStiffness?: number;
-        frictionRelaxation?: number;
-        surfaceVelocity?: number;
+        friction: number;
+        restitution: number;
+        stiffness: number;
+        relaxation: number;
+        frictionStiffness: number;
+        frictionRelaxation: number;
+        surfaceVelocity: number;
 
     }
 
@@ -384,7 +396,7 @@ declare module p2 {
 
         static idCounter: number;
 
-        constructor(id?: number);
+        constructor(id: number);
 
         id: number;
 
@@ -438,13 +450,6 @@ declare module p2 {
         force?: number[];
         angularForce?: number;
         fixedRotation?: boolean;
-        allowSleep?: boolean;
-        collisionResponse?: boolean;
-        ccdIterations?: number;
-        ccdSpeedThreshold?: number;
-        gravityScale?: number;
-        sleepSpeedLimit?: number;
-        sleepTimeLimit?: number;
 
     }
 
@@ -573,52 +578,6 @@ declare module p2 {
 
     }
 
-    export class Ray {
-
-        constructor(options?: {
-            from?: number[];
-            to?: number[];
-            checkCollisionResponse?: boolean;
-            skipBackfaces?: boolean;
-            collisionMask?: number;
-            collisionGroup?: number;
-            mode?: number;
-            callback?: (result: RaycastResult) => void;
-        });
-
-        from: number[];
-        to: number[];
-        length: number;
-
-        update(): void;
-
-        static CLOSEST: number;
-        static ANY: number;
-        static ALL: number;
-
-    }
-
-    export class RaycastResult {
-
-        constructor();
-
-        normal: number[];
-        shape: Shape;
-        body: Body;
-        faceIndex: number;
-        fraction: number;
-        isStopped: boolean;
-
-        reset(): void;
-        getHitDistance(): number;
-        hasHit(): boolean;
-        stop(): boolean;
-        getHitPoint(out: number[], ray: Ray): void;
-        shouldStop(ray: Ray): boolean;
-        set(normal: number[], shape: Shape, body: Body, fraction: number, faceIndex: number): boolean;
-
-    }
-
     export class RotationalSpring extends Spring {
 
         constructor(bodyA: Body, bodyB: Body, options?: {
@@ -663,8 +622,8 @@ declare module p2 {
 
     export interface ConvexOptions extends SharedShapeOptions {
 
-      vertices?: number[][];
-      axes?: number[][];
+      length?: number;
+      radius?: number;
 
     }
 
@@ -1036,8 +995,4 @@ declare module p2 {
         setGlobalRelaxation(relaxation: number): void;
     }
 
-}
-
-declare module 'p2' {
-    export = p2;
 }

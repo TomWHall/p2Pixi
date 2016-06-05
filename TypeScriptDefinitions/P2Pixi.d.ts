@@ -1,9 +1,6 @@
 // TypeScript definitions for p2Pixi v1.0.0
 
-/// <reference path="./p2/index.d.ts"/>
-/// <reference path="./pixi.js/pixi.js.d.ts"/>
-
-declare module P2Pixi {
+declare namespace P2Pixi {
 
   export class Game {
 
