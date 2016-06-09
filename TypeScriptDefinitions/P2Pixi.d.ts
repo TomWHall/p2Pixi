@@ -56,6 +56,7 @@ declare namespace P2Pixi {
     game: Game;
     bodies: p2.Body[];
     containers: PIXI.Container[];
+    children: GameObject[];
 
     addBody(body: p2.Body);
     addShape(body: p2.Body, shape: p2.Shape, options: AddShapeOptions);
