@@ -1,8 +1,8 @@
 ﻿module.exports = (function () {
 
   /**
-   * Creates a new GameObject instance
-   * @param  {Game} game
+   * @constructor
+   * @param  {Object} game
    */
   function GameObject(game) {
     this.game = game;
@@ -14,17 +14,16 @@
   }
 
   /**
-   * Adds the supplied p2 body to the game's world and creates a corresponding null Container object for rendering.
-   * Also adds the body to this GameObject's bodies collection
-   * @param  {Body} body
+   * Adds the supplied p2 body to the game's world and to this GameObject's bodies collection
+   * Also creates a corresponding PIXI Container object for rendering.
+   * @param  {p2.Body} body
    * @return {GameObject} gameObject
    */
   GameObject.prototype.addBody = function (body) {
-    var container = new PIXI.Container();
-
     this.bodies.push(body);
     this.game.world.addBody(body);
 
+    var container = new PIXI.Container();
     this.containers.push(container);
     this.game.pixiAdapter.container.addChild(container);
 
@@ -32,9 +31,23 @@
   };
 
   /**
+   * Removes the supplied p2 body from the game's world and from this GameObject's bodies collection
+   * @param  {p2.Body} body
+   */
+  GameObject.prototype.removeBody = function (body) {
+    var index = this.bodies.indexOf(body);
+
+    this.bodies.splice(index, 1);
+    this.game.world.removeBody(body);
+
+    this.containers.splice(index, 1);
+    this.game.pixiAdapter.container.removeChildAt(index);
+  };
+
+  /**
    * Adds the supplied p2 shape to the supplied p2 body
-   * @param  {Body} body
-   * @param  {Shape} shape
+   * @param  {p2.Body} body
+   * @param  {p2.Shape} shape
    * @param  {Object} options
    * @return {GameObject} gameObject
    */
@@ -57,7 +70,7 @@
 
   /**
    * Adds the supplied p2 constraint to the game's world and to this GameObject's constraints collection
-   * @param  {Constraint} constraint
+   * @param  {p2.Constraint} constraint
    * @return {GameObject} gameObject
    */
   GameObject.prototype.addConstraint = function (constraint) {
@@ -69,20 +82,27 @@
   };
 
   /**
+   * Removes the supplied p2 constraint from the game's world and from this GameObject's constraints collection
+   * @param  {p2.Constraint} constraint
+   */
+  GameObject.prototype.removeConstraint = function (constraint) {
+    this.game.world.removeConstraint(constraint);
+  };
+
+  /**
    * Adds the supplied GameObject as a child of this GameObject
    * @param {GameObject} child
    */
   GameObject.prototype.addChild = function (child) {
     child.parent = this;
     this.children.push(child);
-  }
+  };
 
   /**
    * Updates the PIXI container transforms for this GameObject and all children
    */
   GameObject.prototype.updateTransforms = function () {
-    var pixiAdapter = this.game.pixiAdapter;
-    var ppu = pixiAdapter.pixelsPerLengthUnit;
+    var ppu = this.game.pixiAdapter.pixelsPerLengthUnit;
     var bodies = this.bodies;
     var containers = this.containers;
 
@@ -100,7 +120,7 @@
     for (var i = 0; i < children.length; i++) {
       children[i].updateTransforms();
     }
-  }
+  };
 
   /**
    * Removes this GameObject and all of its children from the game

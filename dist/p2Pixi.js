@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v1.0.0 - 03-06-2016 
+ * p2Pixi v1.0.2 - 19-06-2016 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -11,7 +11,8 @@ var PixiAdapter = require('./PixiAdapter');
 module.exports = (function () {
 
   /**
-   * Creates a new Game instance
+   * @constructor
+   * @param  {Object} options
    */
   function Game(options) {
 
@@ -49,6 +50,7 @@ module.exports = (function () {
 
   /**
    * Loads the supplied assets asyncronously using PIXI.loader
+   * @param  {String[]} assetUrls
    */
   Game.prototype.loadAssets = function (assetUrls) {
     var loader = PIXI.loader;
@@ -68,7 +70,8 @@ module.exports = (function () {
 
   /**
    * Returns true if all async setup functions are complete and the Game is ready to start.
-   * Override this to implement multiple setup functions 
+   * Override this to implement multiple setup functions
+   * @return {Boolean} 
    */
   Game.prototype.isReadyToRun = function () {
     return this.assetsLoaded;
@@ -86,6 +89,7 @@ module.exports = (function () {
 
   /**
    * Returns the current time in seconds
+   * @return {Number}
    */
   Game.prototype.time = function () {
     return new Date().getTime() / 1000;
@@ -161,6 +165,7 @@ module.exports = (function () {
 
   /**
    * Adds the supplied GameObject
+   * @param  {GameObject} gameObject
    */
   Game.prototype.addGameObject = function (gameObject) {
     this.gameObjects.push(gameObject);
@@ -168,6 +173,7 @@ module.exports = (function () {
 
   /**
    * Removes the supplied GameObject
+   * @param  {GameObject} gameObject
    */
   Game.prototype.removeGameObject = function (gameObject) {
     gameObject.remove();
@@ -195,6 +201,7 @@ module.exports = (function () {
 
   /**
    * Called when the window loses focus
+   * @param  {Event} e
    */
   Game.prototype.windowBlur = function (e) {
     this.windowFocused = false;
@@ -202,6 +209,7 @@ module.exports = (function () {
 
   /**
    * Called when the window gets focus
+   * @param  {Event} e
    */
   Game.prototype.windowFocus = function (e) {
     this.windowFocused = true;
@@ -217,8 +225,8 @@ module.exports = (function () {
 module.exports = (function () {
 
   /**
-   * Creates a new GameObject instance
-   * @param  {Game} game
+   * @constructor
+   * @param  {Object} game
    */
   function GameObject(game) {
     this.game = game;
@@ -230,17 +238,16 @@ module.exports = (function () {
   }
 
   /**
-   * Adds the supplied p2 body to the game's world and creates a corresponding null Container object for rendering.
-   * Also adds the body to this GameObject's bodies collection
-   * @param  {Body} body
+   * Adds the supplied p2 body to the game's world and to this GameObject's bodies collection
+   * Also creates a corresponding PIXI Container object for rendering.
+   * @param  {p2.Body} body
    * @return {GameObject} gameObject
    */
   GameObject.prototype.addBody = function (body) {
-    var container = new PIXI.Container();
-
     this.bodies.push(body);
     this.game.world.addBody(body);
 
+    var container = new PIXI.Container();
     this.containers.push(container);
     this.game.pixiAdapter.container.addChild(container);
 
@@ -248,9 +255,23 @@ module.exports = (function () {
   };
 
   /**
+   * Removes the supplied p2 body from the game's world and from this GameObject's bodies collection
+   * @param  {p2.Body} body
+   */
+  GameObject.prototype.removeBody = function (body) {
+    var index = this.bodies.indexOf(body);
+
+    this.bodies.splice(index, 1);
+    this.game.world.removeBody(body);
+
+    this.containers.splice(index, 1);
+    this.game.pixiAdapter.container.removeChildAt(index);
+  };
+
+  /**
    * Adds the supplied p2 shape to the supplied p2 body
-   * @param  {Body} body
-   * @param  {Shape} shape
+   * @param  {p2.Body} body
+   * @param  {p2.Shape} shape
    * @param  {Object} options
    * @return {GameObject} gameObject
    */
@@ -273,7 +294,7 @@ module.exports = (function () {
 
   /**
    * Adds the supplied p2 constraint to the game's world and to this GameObject's constraints collection
-   * @param  {Constraint} constraint
+   * @param  {p2.Constraint} constraint
    * @return {GameObject} gameObject
    */
   GameObject.prototype.addConstraint = function (constraint) {
@@ -285,20 +306,27 @@ module.exports = (function () {
   };
 
   /**
+   * Removes the supplied p2 constraint from the game's world and from this GameObject's constraints collection
+   * @param  {p2.Constraint} constraint
+   */
+  GameObject.prototype.removeConstraint = function (constraint) {
+    this.game.world.removeConstraint(constraint);
+  };
+
+  /**
    * Adds the supplied GameObject as a child of this GameObject
    * @param {GameObject} child
    */
   GameObject.prototype.addChild = function (child) {
     child.parent = this;
     this.children.push(child);
-  }
+  };
 
   /**
    * Updates the PIXI container transforms for this GameObject and all children
    */
   GameObject.prototype.updateTransforms = function () {
-    var pixiAdapter = this.game.pixiAdapter;
-    var ppu = pixiAdapter.pixelsPerLengthUnit;
+    var ppu = this.game.pixiAdapter.pixelsPerLengthUnit;
     var bodies = this.bodies;
     var containers = this.containers;
 
@@ -316,7 +344,7 @@ module.exports = (function () {
     for (var i = 0; i < children.length; i++) {
       children[i].updateTransforms();
     }
-  }
+  };
 
   /**
    * Removes this GameObject and all of its children from the game
@@ -367,7 +395,8 @@ module.exports = (function () {
   var Heightfield = p2.Heightfield;
 
   /**
-   * Creates a new PixiAdapter instance
+   * @constructor
+   * @param  {Object} options
    */
   function PixiAdapter(options) {
 
@@ -441,11 +470,11 @@ module.exports = (function () {
 
   /**
    * Draws a circle onto a PIXI.Graphics object
-   * @param  {PIXI.Graphics} g
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x
    * @param  {Number} y
    * @param  {Number} radius
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawCircle = function (graphics, x, y, radius, style) {
     style = style || {};
@@ -469,10 +498,10 @@ module.exports = (function () {
 
   /**
    * Draws a finite plane onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x0
    * @param  {Number} x1
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawPlane = function (graphics, x0, x1, style) {
     style = style || {};
@@ -490,8 +519,8 @@ module.exports = (function () {
 
     graphics.moveTo(-max, 0);
     graphics.lineTo(max, 0);
-    graphics.lineTo(max, max);
-    graphics.lineTo(-max, max);
+    graphics.lineTo(max, -max);
+    graphics.lineTo(-max, -max);
 
     if (fillColor) {
       graphics.endFill();
@@ -505,9 +534,9 @@ module.exports = (function () {
 
   /**
    * Draws a line onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} len
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawLine = function (graphics, len, style) {
     style = style || {};
@@ -523,13 +552,13 @@ module.exports = (function () {
 
   /**
    * Draws a capsule onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x
    * @param  {Number} y
    * @param  {Number} angle
    * @param  {Number} len
    * @param  {Number} radius
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawCapsule = function (graphics, x, y, angle, len, radius, style) {
     style = style || {};
@@ -586,12 +615,12 @@ module.exports = (function () {
 
   /**
    * Draws a box onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x
    * @param  {Number} y
    * @param  {Number} w
    * @param  {Number} h
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawBox = function (graphics, x, y, w, h, style) {
     style = style || {};
@@ -615,9 +644,9 @@ module.exports = (function () {
 
   /**
    * Draws a convex polygon onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Array} verts
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawConvex = function (graphics, verts, style) {
     style = style || {};
@@ -656,9 +685,9 @@ module.exports = (function () {
 
   /**
    * Draws a path onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Array} path
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawPath = function (graphics, path, style) {
     style = style || {};
@@ -715,9 +744,9 @@ module.exports = (function () {
 
   /**
    * Renders the supplied p2 Shape onto the supplied Pixi Graphics object using the supplied Pixi style properties
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Shape} shape
-   * @param  {Vector} offset
+   * @param  {p2.Vector} offset
    * @param  {Number} angle
    * @param  {Object} style
    */
@@ -732,7 +761,8 @@ module.exports = (function () {
       this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.radius * ppu, style);
 
     } else if (shape instanceof Particle) {
-      this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, 2 * lw, style);
+      var radius = Math.max(1, Math.round(ppu / 100));
+      this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, radius, style);
 
     } else if (shape instanceof Plane) {
       // TODO: use shape angle
@@ -794,7 +824,7 @@ module.exports = (function () {
     // If a Pixi texture has been specified...
     if (textureOptions) {
       var texture = textureOptions.texture;
-      
+
       // Calculate the bounding box of the shape when at zero offset and 0 angle
       var aabb = new p2.AABB();
       shape.computeAABB(aabb, zero, 0);

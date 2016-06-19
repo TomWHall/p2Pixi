@@ -3,7 +3,8 @@
 module.exports = (function () {
 
   /**
-   * Creates a new Game instance
+   * @constructor
+   * @param  {Object} options
    */
   function Game(options) {
 
@@ -41,6 +42,7 @@ module.exports = (function () {
 
   /**
    * Loads the supplied assets asyncronously using PIXI.loader
+   * @param  {String[]} assetUrls
    */
   Game.prototype.loadAssets = function (assetUrls) {
     var loader = PIXI.loader;
@@ -60,7 +62,8 @@ module.exports = (function () {
 
   /**
    * Returns true if all async setup functions are complete and the Game is ready to start.
-   * Override this to implement multiple setup functions 
+   * Override this to implement multiple setup functions
+   * @return {Boolean} 
    */
   Game.prototype.isReadyToRun = function () {
     return this.assetsLoaded;
@@ -78,6 +81,7 @@ module.exports = (function () {
 
   /**
    * Returns the current time in seconds
+   * @return {Number}
    */
   Game.prototype.time = function () {
     return new Date().getTime() / 1000;
@@ -153,6 +157,7 @@ module.exports = (function () {
 
   /**
    * Adds the supplied GameObject
+   * @param  {GameObject} gameObject
    */
   Game.prototype.addGameObject = function (gameObject) {
     this.gameObjects.push(gameObject);
@@ -160,6 +165,7 @@ module.exports = (function () {
 
   /**
    * Removes the supplied GameObject
+   * @param  {GameObject} gameObject
    */
   Game.prototype.removeGameObject = function (gameObject) {
     gameObject.remove();
@@ -187,6 +193,7 @@ module.exports = (function () {
 
   /**
    * Called when the window loses focus
+   * @param  {Event} e
    */
   Game.prototype.windowBlur = function (e) {
     this.windowFocused = false;
@@ -194,6 +201,7 @@ module.exports = (function () {
 
   /**
    * Called when the window gets focus
+   * @param  {Event} e
    */
   Game.prototype.windowFocus = function (e) {
     this.windowFocused = true;

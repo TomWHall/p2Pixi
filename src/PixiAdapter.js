@@ -11,7 +11,8 @@ module.exports = (function () {
   var Heightfield = p2.Heightfield;
 
   /**
-   * Creates a new PixiAdapter instance
+   * @constructor
+   * @param  {Object} options
    */
   function PixiAdapter(options) {
 
@@ -85,11 +86,11 @@ module.exports = (function () {
 
   /**
    * Draws a circle onto a PIXI.Graphics object
-   * @param  {PIXI.Graphics} g
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x
    * @param  {Number} y
    * @param  {Number} radius
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawCircle = function (graphics, x, y, radius, style) {
     style = style || {};
@@ -113,10 +114,10 @@ module.exports = (function () {
 
   /**
    * Draws a finite plane onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x0
    * @param  {Number} x1
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawPlane = function (graphics, x0, x1, style) {
     style = style || {};
@@ -134,8 +135,8 @@ module.exports = (function () {
 
     graphics.moveTo(-max, 0);
     graphics.lineTo(max, 0);
-    graphics.lineTo(max, max);
-    graphics.lineTo(-max, max);
+    graphics.lineTo(max, -max);
+    graphics.lineTo(-max, -max);
 
     if (fillColor) {
       graphics.endFill();
@@ -149,9 +150,9 @@ module.exports = (function () {
 
   /**
    * Draws a line onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} len
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawLine = function (graphics, len, style) {
     style = style || {};
@@ -167,13 +168,13 @@ module.exports = (function () {
 
   /**
    * Draws a capsule onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x
    * @param  {Number} y
    * @param  {Number} angle
    * @param  {Number} len
    * @param  {Number} radius
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawCapsule = function (graphics, x, y, angle, len, radius, style) {
     style = style || {};
@@ -230,12 +231,12 @@ module.exports = (function () {
 
   /**
    * Draws a box onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Number} x
    * @param  {Number} y
    * @param  {Number} w
    * @param  {Number} h
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawBox = function (graphics, x, y, w, h, style) {
     style = style || {};
@@ -259,9 +260,9 @@ module.exports = (function () {
 
   /**
    * Draws a convex polygon onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Array} verts
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawConvex = function (graphics, verts, style) {
     style = style || {};
@@ -300,9 +301,9 @@ module.exports = (function () {
 
   /**
    * Draws a path onto a PIXI.Graphics object
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Array} path
-   * @param  {object} style
+   * @param  {Object} style
    */
   PixiAdapter.prototype.drawPath = function (graphics, path, style) {
     style = style || {};
@@ -359,9 +360,9 @@ module.exports = (function () {
 
   /**
    * Renders the supplied p2 Shape onto the supplied Pixi Graphics object using the supplied Pixi style properties
-   * @param  {Graphics} graphics
+   * @param  {PIXI.Graphics} graphics
    * @param  {Shape} shape
-   * @param  {Vector} offset
+   * @param  {p2.Vector} offset
    * @param  {Number} angle
    * @param  {Object} style
    */
@@ -376,7 +377,8 @@ module.exports = (function () {
       this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, shape.radius * ppu, style);
 
     } else if (shape instanceof Particle) {
-      this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, 2 * lw, style);
+      var radius = Math.max(1, Math.round(ppu / 100));
+      this.drawCircle(graphics, offset[0] * ppu, -offset[1] * ppu, radius, style);
 
     } else if (shape instanceof Plane) {
       // TODO: use shape angle
@@ -438,7 +440,7 @@ module.exports = (function () {
     // If a Pixi texture has been specified...
     if (textureOptions) {
       var texture = textureOptions.texture;
-      
+
       // Calculate the bounding box of the shape when at zero offset and 0 angle
       var aabb = new p2.AABB();
       shape.computeAABB(aabb, zero, 0);

@@ -59,9 +59,12 @@ declare namespace P2Pixi {
     children: GameObject[];
 
     addBody(body: p2.Body);
+    removeBody(body: p2.Body);
+
     addShape(body: p2.Body, shape: p2.Shape, options: AddShapeOptions);
 
     addConstraint(constraint: p2.Constraint);
+    removeConstraint(constraint: p2.Constraint);
 
     addChild(child: GameObject);
 
