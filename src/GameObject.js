@@ -33,6 +33,7 @@
   /**
    * Removes the supplied p2 body from the game's world and from this GameObject's bodies collection
    * @param  {p2.Body} body
+   * @return {GameObject} gameObject
    */
   GameObject.prototype.removeBody = function (body) {
     var index = this.bodies.indexOf(body);
@@ -42,6 +43,8 @@
 
     this.containers.splice(index, 1);
     this.game.pixiAdapter.container.removeChildAt(index);
+
+    return this;
   };
 
   /**
@@ -84,9 +87,12 @@
   /**
    * Removes the supplied p2 constraint from the game's world and from this GameObject's constraints collection
    * @param  {p2.Constraint} constraint
+   * @return {GameObject} gameObject
    */
   GameObject.prototype.removeConstraint = function (constraint) {
     this.game.world.removeConstraint(constraint);
+
+    return this;
   };
 
   /**

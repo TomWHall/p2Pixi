@@ -16,7 +16,7 @@ declare namespace P2Pixi {
     lastWorldStepTime: number;
     assetsLoaded: boolean;
 
-    loadAssets(assetUrls: string[]);
+    loadAssets(assetUrls: string[]): void;
     isReadyToRun(): boolean;
     runIfReady(): void;
 
@@ -58,15 +58,15 @@ declare namespace P2Pixi {
     containers: PIXI.Container[];
     children: GameObject[];
 
-    addBody(body: p2.Body);
-    removeBody(body: p2.Body);
+    addBody(body: p2.Body): GameObject;
+    removeBody(body: p2.Body): GameObject;
 
-    addShape(body: p2.Body, shape: p2.Shape, options: AddShapeOptions);
+    addShape(body: p2.Body, shape: p2.Shape, options: AddShapeOptions): GameObject;
 
-    addConstraint(constraint: p2.Constraint);
-    removeConstraint(constraint: p2.Constraint);
+    addConstraint(constraint: p2.Constraint): GameObject;
+    removeConstraint(constraint: p2.Constraint): GameObject;
 
-    addChild(child: GameObject);
+    addChild(child: GameObject): void;
 
     updateTransforms(): void;
 
@@ -106,14 +106,16 @@ declare namespace P2Pixi {
     setupView(): void;
 
     drawCircle(graphics: PIXI.Graphics, x: number, y: number, radius: number, styleOptions: StyleOptions): void;
-    drawPlane(graphics: PIXI.Graphics, x0: number, x1: number, styleOptions: StyleOptions);
+    drawPlane(graphics: PIXI.Graphics, x0: number, x1: number, styleOptions: StyleOptions): void;
     drawLine(graphics: PIXI.Graphics, len: number, styleOptions: StyleOptions): void;
     drawCapsule(graphics: PIXI.Graphics, x: number, y: number, angle: number, len: number, radius: number, styleOptions: StyleOptions): void;
     drawBox(graphics: PIXI.Graphics, x: number, y: number, width: number, height: number, styleOptions: StyleOptions): void;
     drawConvex(graphics: PIXI.Graphics, verts: number[][], styleOptions: StyleOptions): void;
-    drawPath(graphics: PIXI.Graphics, path: number[][], styleOptions: StyleOptions);
+    drawPath(graphics: PIXI.Graphics, path: number[][], styleOptions: StyleOptions): void;
 
-    addShape(container: PIXI.Container, shape: p2.Shape, options?: ShapeOptions);
+    addShape(container: PIXI.Container, shape: p2.Shape, options?: ShapeOptions): void;
+
+    resize(width: number, height: number): void; 
 
   }
 
@@ -136,6 +138,7 @@ declare namespace P2Pixi {
 
   export interface StyleOptions {
 
+    lineWidthUnits?: number;
     lineWidth?: number;
     lineColor?: number;
     fillColor?: number;
@@ -146,7 +149,7 @@ declare namespace P2Pixi {
 
     offset?: p2.vec2;
     angle?: number;
-    textureOptions?: any;
+    textureOptions?: TextureOptions;
     styleOptions?: StyleOptions;
     alpha?: number;
 
