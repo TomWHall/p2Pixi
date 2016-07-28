@@ -25,7 +25,7 @@
       // Ground HeightField
 
       var ground = new p2.Body({
-        position: [-75, -5]
+        position: [0, -5]
       });
 
       var heights = [];
@@ -36,14 +36,14 @@
       heightfield.material = this.rockMaterial;
 
       this.addBody(ground)
-        .addShape(ground,
-          heightfield,
-          {
-            textureOptions: {
-              texture: rockTexture
-            },
-            collisionOptions: collisionOptions
-          });
+        .addShape(ground, heightfield,
+        {
+          textureOptions: {
+            texture: rockTexture
+          },
+          offset: [-75, 0],
+          collisionOptions: collisionOptions
+        });
     }
 
     Terrain.prototype = Object.create(P2Pixi.GameObject.prototype);

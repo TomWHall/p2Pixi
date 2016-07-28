@@ -359,9 +359,9 @@ module.exports = (function () {
   };
 
   /**
-   * Renders the supplied p2 Shape onto the supplied Pixi Graphics object using the supplied Pixi style properties
+   * Renders a p2 Shape onto a Pixi Graphics object
    * @param  {PIXI.Graphics} graphics
-   * @param  {Shape} shape
+   * @param  {p2.Shape} shape
    * @param  {p2.Vector} offset
    * @param  {Number} angle
    * @param  {Object} style
@@ -406,15 +406,15 @@ module.exports = (function () {
 
       this.drawConvex(graphics, verts, style);
     } else if (shape instanceof Heightfield) {
-      var path = [[0, 100 * ppu]];
       var heights = shape.heights;
 
+      var path = [[0, 100 * ppu]]; // Left-hand edge
       for (var i = 0; i < heights.length; i++) {
         var h = heights[i];
         path.push([i * shape.elementWidth * ppu, -h * ppu]);
       }
+      path.push([heights.length * shape.elementWidth * ppu, 100 * ppu]); // Right-hand edge
 
-      path.push([heights.length * shape.elementWidth * ppu, 100 * ppu]);
       this.drawPath(graphics, path, style);
     }
   };
@@ -441,23 +441,23 @@ module.exports = (function () {
     if (textureOptions) {
       var texture = textureOptions.texture;
 
-      // Calculate the bounding box of the shape when at zero offset and 0 angle
+      // Calculate the bounding box of the shape
       var aabb = new p2.AABB();
       shape.computeAABB(aabb, zero, 0);
 
-      // Get world coordinates of shape boundaries
       var left = aabb.lowerBound[0];
       var bottom = aabb.lowerBound[1];
       var right = aabb.upperBound[0];
       var top = aabb.upperBound[1];
 
-      // Cater for Heightfield shapes
-      if (shape instanceof Heightfield) {
-        bottom = -(this.options.height / ppu);
-      }
-
+      // Get dimensions of the shape
       var width = right - left;
       var height = top - bottom;
+
+      // Hack for Heightfields
+      if (shape instanceof Heightfield) {
+        height = 100 * ppu;
+      }
 
       // Create a Sprite or TilingSprite to cover the entire shape
       var sprite;
@@ -492,26 +492,18 @@ module.exports = (function () {
       }
 
       // Sprite positions are the top-left corner of the Sprite, whereas Graphics objects
-      // are positioned at their origin
-      if (angle === 0) {
-        sprite.position.x = (left * ppu) + (offset[0] * ppu);
-        sprite.position.y = -(top * ppu) - (offset[1] * ppu);
-        sprite.rotation = -angle;
-
-        container.addChild(sprite);
+      // are positioned at their origin. Heightfields start at x = 0 
+      if (shape instanceof Heightfield) {
+        sprite.anchor = new PIXI.Point(0, 0.5);
       } else {
-        sprite.position.x = (left * ppu);
-        sprite.position.y = -(top * ppu);
-
-        var doc = new PIXI.Container();
-        doc.addChild(sprite);
-        doc.position.x = (offset[0] * ppu);
-        doc.position.y = -(offset[1] * ppu);
-        doc.rotation = -angle;
-
-        doc.addChild(sprite);
-        container.addChild(doc);
+        sprite.anchor = new PIXI.Point(0.5, 0.5);
       }
+
+      sprite.position.x = (offset[0] * ppu);
+      sprite.position.y = -(offset[1] * ppu);
+      sprite.rotation = -angle;
+
+      container.addChild(sprite);
     }
 
     // If any Pixi vector styles have been specified...
