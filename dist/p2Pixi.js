@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v1.0.4 - 28-07-2016 
+ * p2Pixi v1.0.5 - 15-08-2016 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -37,7 +37,7 @@ module.exports = (function () {
     window.addEventListener('blur', function (e) { self.windowBlur(e); });
     window.addEventListener('focus', function (e) { self.windowFocus(e); });
 
-    this.lastWorldStepTime = null;
+    this.lastTimeSeconds = null;
 
     this.assetsLoaded = false;
 
@@ -88,14 +88,6 @@ module.exports = (function () {
   };
 
   /**
-   * Returns the current time in seconds
-   * @return {Number}
-   */
-  Game.prototype.time = function () {
-    return new Date().getTime() / 1000;
-  };
-
-  /**
    * Called before the game loop is started 
    */
   Game.prototype.beforeRun = function () { };
@@ -104,14 +96,21 @@ module.exports = (function () {
    * Begins the world step / render loop
    */
   Game.prototype.run = function () {
-    this.lastWorldStepTime = this.time();
+    this.lastTimeSeconds = null;
 
     var self = this;
-    function update() {
+    var timeSeconds;
+    var lastTimeSeconds;
+    var deltaTime;
+    var fixedTimeStep = 1 / 60;
+
+    function update(t) {
       if (self.windowFocused && !self.paused) {
-        var timeSinceLastCall = self.time() - self.lastWorldStepTime;
-        self.lastWorldStepTime = self.time();
-        self.world.step(1 / 60, timeSinceLastCall, 10);
+        timeSeconds = t / 1000;
+        deltaTime = timeSeconds - (self.lastTimeSeconds || timeSeconds);
+        self.lastTimeSeconds = timeSeconds;
+
+        self.world.step(fixedTimeStep, deltaTime, 10);
       }
 
       self.beforeRender();
@@ -195,7 +194,7 @@ module.exports = (function () {
     this.paused = !this.paused;
 
     if (!this.paused) {
-      this.lastWorldStepTime = this.time();
+      this.lastTimeSeconds = performance.now() / 1000;
     }
   };
 
@@ -215,7 +214,7 @@ module.exports = (function () {
     this.windowFocused = true;
 
     if (!this.paused) {
-      this.lastWorldStepTime = this.time();
+      this.lastTimeSeconds = performance.now() / 1000;
     }
   };
 
@@ -840,14 +839,14 @@ module.exports = (function () {
       var right = aabb.upperBound[0];
       var top = aabb.upperBound[1];
 
+      // Cater for Heightfield shapes 
+      if (shape instanceof Heightfield) { 
+        bottom = -(this.options.height / ppu); 
+      } 
+
       // Get dimensions of the shape
       var width = right - left;
       var height = top - bottom;
-
-      // Hack for Heightfields
-      if (shape instanceof Heightfield) {
-        height = 100 * ppu;
-      }
 
       // Create a Sprite or TilingSprite to cover the entire shape
       var sprite;

@@ -33,15 +33,12 @@
 
       this.speed = 0; // Speed of the motors, in p2 speed units
       this.maximumSpeed = 25; // Absolute maxiumum speed of the motors in either direction, in p2 speed units
-      this.accelerationRate = 10; // Rate at which player can accelerate, in p2 speed units per millisecond
-      this.decelerationRate = 10; // Rate at which the buggy comes to rest, in p2 speed units per millisecond
+      this.accelerationRate = 0.25; // Rate at which player can accelerate, in p2 speed units per millisecond
+      this.decelerationRate = 0.25; // Rate at which the buggy comes to rest, in p2 speed units per millisecond
       this.reverseDirectionRate = 3; // Multiplier for extra reverse acceleration when changing direction
       this.direction = 0; // Direction of the buggy. Negative = left, positive = right
 
       this.tyreMaterial = new p2.Material();
-
-      this.timeSinceLastStep = 0;
-      this.lastCallTime = this.game.time();
 
 
       // Chassis, dome and plate
@@ -196,27 +193,23 @@
       // Adjust speed based on acceleration
 
       this.game.world.on('postStep', function (e) {
-        var time = self.game.time();
-        var timeSinceLastCall = time - self.lastCallTime;
         var speed = self.getSpeed();
 
-        self.lastCallTime = time;
-
         if (self.direction < 0) {
-          speed -= (timeSinceLastCall * (self.accelerationRate * (speed > 0 ? self.reverseDirectionRate : 1)));
+          speed -= (self.accelerationRate * (speed > 0 ? self.reverseDirectionRate : 1));
           if (speed < -self.maximumSpeed) {
             speed = -self.maximumSpeed;
           }
         } else if (self.direction > 0) {
-          speed += (timeSinceLastCall * (self.accelerationRate * (speed < 0 ? self.reverseDirectionRate : 1)));
+          speed += (self.accelerationRate * (speed < 0 ? self.reverseDirectionRate : 1));
           if (speed > self.maximumSpeed) {
             speed = self.maximumSpeed;
           }
         } else {
           if (speed < 0) {
-            speed += (timeSinceLastCall * self.decelerationRate)
+            speed += self.decelerationRate
           } else if (speed > 0) {
-            speed -= (timeSinceLastCall * self.decelerationRate);
+            speed -= self.decelerationRate;
           }
         }
 

@@ -450,14 +450,14 @@ module.exports = (function () {
       var right = aabb.upperBound[0];
       var top = aabb.upperBound[1];
 
+      // Cater for Heightfield shapes 
+      if (shape instanceof Heightfield) { 
+        bottom = -(this.options.height / ppu); 
+      } 
+
       // Get dimensions of the shape
       var width = right - left;
       var height = top - bottom;
-
-      // Hack for Heightfields
-      if (shape instanceof Heightfield) {
-        height = 100 * ppu;
-      }
 
       // Create a Sprite or TilingSprite to cover the entire shape
       var sprite;

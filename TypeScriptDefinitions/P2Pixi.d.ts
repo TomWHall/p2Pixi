@@ -31,7 +31,6 @@ declare namespace P2Pixi {
     removeGameObject(gameObject: GameObject): void;
     clear(): void;
 
-    time(): number;
     pauseToggle(): void;
 
     windowBlur(e: UIEvent): void;
