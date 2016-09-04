@@ -136,8 +136,9 @@
     var world = game.world;
     var container = game.pixiAdapter.container;
 
-    for (var i = 0; i < this.children.length; i++) {
-      this.children[i].remove();
+    // Remove children 
+    while (this.children.length > 0) {
+      this.children[0].remove();
     }
 
     // Remove p2 constraints from the world

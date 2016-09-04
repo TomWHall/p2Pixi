@@ -1,5 +1,5 @@
 /** 
- * p2Pixi v1.0.5 - 15-08-2016 
+ * p2Pixi v1.0.6 - 04-09-2016 
  * Copyright (c) Tom W Hall <tomshalls@gmail.com> 
  * A simple 2D vector game model framework using p2.js for physics and Pixi.js for rendering. 
  * License: MIT 
@@ -359,8 +359,9 @@ module.exports = (function () {
     var world = game.world;
     var container = game.pixiAdapter.container;
 
-    for (var i = 0; i < this.children.length; i++) {
-      this.children[i].remove();
+    // Remove children 
+    while (this.children.length > 0) {
+      this.children[0].remove();
     }
 
     // Remove p2 constraints from the world
