@@ -7,10 +7,6 @@ Live demos:
 [Buggy](http://booleanoperations.com/experiments/p2pixi/buggy)
 [Spinners](http://booleanoperations.com/experiments/p2pixi/spinners)
 
-Games using p2Pixi:
-
-[Descensus](http://booleanoperations.com/games/descensus)
-
 
 Below is a brief overview of the 3 classes and their key methods. Refer to the TypeScript definitions for further details.
 
